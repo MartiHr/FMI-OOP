@@ -75,19 +75,28 @@ Edge* initializeEdges(size_t edgesCount)
 	return edges;
 }
 
-unsigned getVerticesCount(Edge& edges)
+unsigned getUniqueVerticesCount(Edge*& edges, unsigned edgesCount)
 {
+	if (!edges)
+	{
+		return 0;
+	}
+
 	// Counting unique vertices
+	// Array to store unique vertices, used as impromptu cache
 	char uniqueVertices[MAX_VERTICES][STR_MAX_LEN + 1];
 	unsigned uniqueVerticesCount = 0;
 
-	for (size_t i = 0; i < edges; i++) {
+	for (size_t i = 0; i < edgesCount; i++) 
+	{
 		bool foundStart = false;
 		bool foundEnd = false;
 
 		// Check if the start vertex is unique
-		for (unsigned j = 0; j < uniqueVerticesCount; j++) {
-			if (strcmp(graph.edges[i].start.name, uniqueVertices[j]) == 0) {
+		for (unsigned j = 0; j < uniqueVerticesCount; j++) 
+		{
+			if (strcmp(edges[i].start.name, uniqueVertices[j]) == 0) 
+			{
 				foundStart = true;
 				break;
 			}
@@ -95,21 +104,24 @@ unsigned getVerticesCount(Edge& edges)
 
 		// Add start vertex if it's unique
 		if (!foundStart) {
-			strcpy(uniqueVertices[uniqueVerticesCount], graph.edges[i].start.name);
+			strcpy(uniqueVertices[uniqueVerticesCount], edges[i].start.name);
 			uniqueVerticesCount++;
 		}
 
 		// Check if the end vertex is unique
-		for (unsigned j = 0; j < uniqueVerticesCount; j++) {
-			if (strcmp(graph.edges[i].end.name, uniqueVertices[j]) == 0) {
+		for (unsigned j = 0; j < uniqueVerticesCount; j++) 
+		{
+			if (strcmp(edges[i].end.name, uniqueVertices[j]) == 0) 
+			{
 				foundEnd = true;
 				break;
 			}
 		}
 
 		// Add end vertex if it's unique
-		if (!foundEnd) {
-			strcpy(uniqueVertices[uniqueVerticesCount], graph.edges[i].end.name);
+		if (!foundEnd) 
+		{
+			strcpy(uniqueVertices[uniqueVerticesCount], edges[i].end.name);
 			uniqueVerticesCount++;
 		}
 	}
@@ -124,7 +136,7 @@ Graph initializeGraph(unsigned edgesCount)
 	graph.edges = edges;
 	graph.edgesCount = edgesCount;
 	
-	uniqueVerticesCount = getUniqueVerticesCount(edges, graph.edgesCount);
+	unsigned uniqueVerticesCount = getUniqueVerticesCount(graph.edges, graph.edgesCount);
 
 	graph.verticesCount = uniqueVerticesCount;
 
@@ -186,6 +198,9 @@ int main()
 	cin >> m;
 
 	Graph graph = initializeGraph(m);
+
+
+
 	freeGraphMemory(graph);
 
 	return 0;
