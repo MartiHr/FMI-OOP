@@ -6,6 +6,7 @@ using std::cout;
 using std::endl;
 
 const size_t STR_MAX_LEN = 10;
+const size_t MAX_VERTICES = 128;
 
 struct Vertex
 {
@@ -74,6 +75,47 @@ Edge* initializeEdges(size_t edgesCount)
 	return edges;
 }
 
+unsigned getVerticesCount(Edge& edges)
+{
+	// Counting unique vertices
+	char uniqueVertices[MAX_VERTICES][STR_MAX_LEN + 1];
+	unsigned uniqueVerticesCount = 0;
+
+	for (size_t i = 0; i < edges; i++) {
+		bool foundStart = false;
+		bool foundEnd = false;
+
+		// Check if the start vertex is unique
+		for (unsigned j = 0; j < uniqueVerticesCount; j++) {
+			if (strcmp(graph.edges[i].start.name, uniqueVertices[j]) == 0) {
+				foundStart = true;
+				break;
+			}
+		}
+
+		// Add start vertex if it's unique
+		if (!foundStart) {
+			strcpy(uniqueVertices[uniqueVerticesCount], graph.edges[i].start.name);
+			uniqueVerticesCount++;
+		}
+
+		// Check if the end vertex is unique
+		for (unsigned j = 0; j < uniqueVerticesCount; j++) {
+			if (strcmp(graph.edges[i].end.name, uniqueVertices[j]) == 0) {
+				foundEnd = true;
+				break;
+			}
+		}
+
+		// Add end vertex if it's unique
+		if (!foundEnd) {
+			strcpy(uniqueVertices[uniqueVerticesCount], graph.edges[i].end.name);
+			uniqueVerticesCount++;
+		}
+	}
+}
+
+// A function for initializing the graph
 Graph initializeGraph(unsigned edgesCount)
 {
 	Edge* edges = initializeEdges(edgesCount);
@@ -81,12 +123,15 @@ Graph initializeGraph(unsigned edgesCount)
 	Graph graph;
 	graph.edges = edges;
 	graph.edgesCount = edgesCount;
-	// FIX
-	graph.verticesCount = edgesCount * 2;
+	
+	uniqueVerticesCount = getUniqueVerticesCount(edges, graph.edgesCount);
+
+	graph.verticesCount = uniqueVerticesCount;
 
 	return graph;
 }
 
+// Function for creating a deep copy of the struct edges
 void deepCopyEdges(const Edge*& source, size_t edgesCount, Edge*& target) 
 {
 	for (size_t i = 0; i < edgesCount; i++)
@@ -95,8 +140,14 @@ void deepCopyEdges(const Edge*& source, size_t edgesCount, Edge*& target)
 	}
 }
 
+// Delete dinamically set edges
+void freeEdges(Edge* edges)
+{
+	delete[] edges;
+}
+
 // Take edge as an argument
-void addEdgeToGraph(Vertex& start, Vertex& end, Graph& graph) 
+void addEdgeToGraph(Edge& edge, Graph& graph) 
 {
 	Edge* newEdges = new Edge[graph.edgesCount + 1];
 	deepCopyEdges(graph.edges, graph.edgesCount, newEdges);
@@ -105,18 +156,14 @@ void addEdgeToGraph(Vertex& start, Vertex& end, Graph& graph)
 	graph.edges = newEdges;
 
 	Edge additionalEdge;
-	additionalEdge.start = start;
-	additionalEdge.end = end;
+	additionalEdge.start = edge.start;
+	additionalEdge.end = edge.end;
 
 	graph.edges[graph.edgesCount] = additionalEdge;
 	graph.edgesCount++;
 }
 
-void freeEdges(Edge* edges)
-{
-	delete[] edges;
-}
-
+// A function for clearing the dinamically allocated memory of the graph
 void freeGraphMemory(Graph& graph) 
 {
 	freeEdges(graph.edges);
