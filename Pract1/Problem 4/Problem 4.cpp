@@ -213,9 +213,6 @@ int main()
 	cin >> m;
 
 	Graph graph = initializeGraph(m);
-
-
-
 	deleteGraph(graph);
 
 	return 0;
