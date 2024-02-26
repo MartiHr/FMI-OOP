@@ -52,6 +52,7 @@ Edge* initializeEdges(size_t edgesCount)
 	return edges;
 }
 
+// Find the count of the unique vertices
 unsigned getUniqueVerticesCount(Edge*& edges, unsigned edgesCount)
 {
 	if (!edges)
@@ -63,7 +64,8 @@ unsigned getUniqueVerticesCount(Edge*& edges, unsigned edgesCount)
 	// Array to store unique vertices, used as impromptu cache
 	char uniqueVertices[MAX_VERTICES][STR_MAX_LEN + 1];
 	unsigned uniqueVerticesCount = 0;
-
+	
+	unsigned startIndex = 0;
 	for (size_t i = 0; i < edgesCount; i++) 
 	{
 		bool foundStart = false;
@@ -81,8 +83,9 @@ unsigned getUniqueVerticesCount(Edge*& edges, unsigned edgesCount)
 
 		// Add start vertex if it's unique
 		if (!foundStart) {
-			strcpy(uniqueVertices[uniqueVerticesCount], edges[i].start.name);
+			strcpy(uniqueVertices[startIndex], edges[i].start.name);
 			uniqueVerticesCount++;
+			startIndex++;
 		}
 
 		// Check if the end vertex is unique
@@ -98,7 +101,9 @@ unsigned getUniqueVerticesCount(Edge*& edges, unsigned edgesCount)
 		// Add end vertex if it's unique
 		if (!foundEnd) 
 		{
+			strcpy(uniqueVertices[startIndex], edges[i].end.name);
 			uniqueVerticesCount++;
+			startIndex++;
 		}
 	}
 
@@ -115,6 +120,7 @@ Graph initializeGraph(unsigned edgesCount)
 	graph.edgesCount = edgesCount;
 	
 	unsigned uniqueVerticesCount = getUniqueVerticesCount(graph.edges, graph.edgesCount);
+
 	graph.verticesCount = uniqueVerticesCount;
 
 	return graph;
@@ -153,18 +159,41 @@ void addEdgeToGraph(Edge& edge, Graph& graph)
 }
 
 // A function for clearing the dinamically allocated memory of the graph
-void freeGraphMemory(Graph& graph) 
+void deleteGraph(Graph& graph)
 {
 	freeEdges(graph.edges);
+	graph.edgesCount = 0;
+	graph.verticesCount = 0;
 }
 
-// currently here
-unsigned findVertexDegree(Vertex& vertex, Graph& graph) 
+// Function for finding the degree of a vertex
+unsigned findVertexDegree(const Graph& graph, Vertex& vertex)
 {
+	unsigned count = 0;
+
 	for (size_t i = 0; i < graph.edgesCount; i++)
 	{
-		getVertex(graph.edges, graph.edgesCount, vertex.name);
+		if (strcmp(graph.edges[i].start.name, vertex.name))
+		{
+			count++;
+		}
 	}
+
+	return count;
+}
+
+bool isGraphFull(const Graph& graph) {
+	// Iterate over each vertex in the graph
+	for (size_t i = 0; i < graph.verticesCount; i++) {
+		Vertex currentVertex = graph.edges[i].start;
+		unsigned vertexDegree = findVertexDegree(graph, currentVertex);
+
+		// Check if the degree of the current vertex is equal to the total number of vertices minus one
+		if (vertexDegree != graph.verticesCount - 1) {
+			return false;
+		}
+	}
+	return true;
 }
 
 int main()
@@ -178,7 +207,7 @@ int main()
 
 
 
-	freeGraphMemory(graph);
+	deleteGraph(graph);
 
 	return 0;
 }
