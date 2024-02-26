@@ -35,29 +35,6 @@ Vertex readVertex()
 	return ver;
 }
 
-// Slower way to find a concrete vertex in the graph
-//Vertex* getVertex(Edge*& edges, size_t edgesCount, char* vertexName)
-//{
-//	if (!vertexName || !edges)
-//	{
-//		return nullptr;
-//	}
-//
-//	for (size_t i = 0; i < edgesCount; i++)
-//	{
-//		if (strcmp(edges[i].start.name, vertexName) == 0)
-//		{
-//			return &(edges[i].start);
-//		}
-//		else if (strcmp(edges[i].end.name, vertexName) == 0)
-//		{
-//			return &(edges[i].end);
-//		}
-//	}
-//
-//	return nullptr;
-//}
-
 Edge* initializeEdges(size_t edgesCount)
 {
 	Edge* edges = new Edge[edgesCount];
@@ -121,7 +98,6 @@ unsigned getUniqueVerticesCount(Edge*& edges, unsigned edgesCount)
 		// Add end vertex if it's unique
 		if (!foundEnd) 
 		{
-			strcpy(uniqueVertices[uniqueVerticesCount], edges[i].end.name);
 			uniqueVerticesCount++;
 		}
 	}
