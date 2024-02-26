@@ -25,6 +25,7 @@ struct Graph
 	Edge* edges;
 };
 
+// Used for reading a vertex. If no extensibility is needed it could be omitted.
 Vertex readVertex() 
 {
 	Vertex ver;
@@ -33,27 +34,28 @@ Vertex readVertex()
 	return ver;
 }
 
-Vertex* getVertex(Edge*& edges, size_t edgesCount, char* vertexName)
-{
-	if (!vertexName || !edges)
-	{
-		return nullptr;
-	}
-
-	for (size_t i = 0; i < edgesCount; i++)
-	{
-		if (strcmp(edges[i].start.name, vertexName) == 0)
-		{
-			return &(edges[i].start);
-		}
-		else if (strcmp(edges[i].end.name, vertexName) == 0)
-		{
-			return &(edges[i].end);
-		}
-	}
-
-	return nullptr;
-}
+// Slower way to find a concrete vertex in the graph
+//Vertex* getVertex(Edge*& edges, size_t edgesCount, char* vertexName)
+//{
+//	if (!vertexName || !edges)
+//	{
+//		return nullptr;
+//	}
+//
+//	for (size_t i = 0; i < edgesCount; i++)
+//	{
+//		if (strcmp(edges[i].start.name, vertexName) == 0)
+//		{
+//			return &(edges[i].start);
+//		}
+//		else if (strcmp(edges[i].end.name, vertexName) == 0)
+//		{
+//			return &(edges[i].end);
+//		}
+//	}
+//
+//	return nullptr;
+//}
 
 Edge* initializeEdges(size_t edgesCount)
 {
@@ -99,7 +101,7 @@ void addEdgeToGraph(Vertex& start, Vertex& end, Graph& graph)
 	Edge* newEdges = new Edge[graph.edgesCount + 1];
 	deepCopyEdges(graph.edges, graph.edgesCount, newEdges);
 
-	delete[] graph.edges;
+	freeEdges(graph.edges);
 	graph.edges = newEdges;
 
 	Edge additionalEdge;
@@ -110,14 +112,14 @@ void addEdgeToGraph(Vertex& start, Vertex& end, Graph& graph)
 	graph.edgesCount++;
 }
 
-void freeEdges()
+void freeEdges(Edge* edges)
 {
-
+	delete[] edges;
 }
 
 void freeGraphMemory(Graph& graph) 
 {
-	delete[] graph.edges;
+	freeEdges(graph.edges);
 }
 
 // currently here
@@ -137,7 +139,6 @@ int main()
 	cin >> m;
 
 	Graph graph = initializeGraph(m);
-
 	freeGraphMemory(graph);
 
 	return 0;
