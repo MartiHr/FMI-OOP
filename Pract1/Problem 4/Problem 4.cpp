@@ -183,7 +183,7 @@ unsigned findVertexDegree(const Graph& graph, Vertex& vertex)
 }
 
 // Check if a graph is full
-bool isGraphFull(const Graph& graph) 
+bool checkGraphFull(const Graph& graph) 
 {
 	// Iterate over each vertex in the graph
 	for (size_t i = 0; i < graph.verticesCount; i++) 
@@ -200,9 +200,9 @@ bool isGraphFull(const Graph& graph)
 	return true;
 }
 
-void deleteEdge()
+void deleteEdge(Graph& graph, Edge& edge)
 {
-
+	// TODO: implement this last function
 }
 
 int main()
