@@ -182,18 +182,27 @@ unsigned findVertexDegree(const Graph& graph, Vertex& vertex)
 	return count;
 }
 
-bool isGraphFull(const Graph& graph) {
+// Check if a graph is full
+bool isGraphFull(const Graph& graph) 
+{
 	// Iterate over each vertex in the graph
-	for (size_t i = 0; i < graph.verticesCount; i++) {
+	for (size_t i = 0; i < graph.verticesCount; i++) 
+	{
 		Vertex currentVertex = graph.edges[i].start;
 		unsigned vertexDegree = findVertexDegree(graph, currentVertex);
 
-		// Check if the degree of the current vertex is equal to the total number of vertices minus one
-		if (vertexDegree != graph.verticesCount - 1) {
+		if (vertexDegree != graph.verticesCount - 1)
+		{
 			return false;
 		}
 	}
+
 	return true;
+}
+
+void deleteEdge()
+{
+
 }
 
 int main()
