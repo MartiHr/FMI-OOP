@@ -125,6 +125,8 @@ unsigned getUniqueVerticesCount(Edge*& edges, unsigned edgesCount)
 			uniqueVerticesCount++;
 		}
 	}
+
+	return uniqueVerticesCount;
 }
 
 // A function for initializing the graph
@@ -137,7 +139,6 @@ Graph initializeGraph(unsigned edgesCount)
 	graph.edgesCount = edgesCount;
 	
 	unsigned uniqueVerticesCount = getUniqueVerticesCount(graph.edges, graph.edgesCount);
-
 	graph.verticesCount = uniqueVerticesCount;
 
 	return graph;
