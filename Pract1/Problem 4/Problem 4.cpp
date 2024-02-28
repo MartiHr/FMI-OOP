@@ -27,7 +27,7 @@ struct Graph
 };
 
 // Used for reading a vertex. If no extensibility is needed it could be omitted.
-Vertex readVertex() 
+Vertex readVertex()
 {
 	Vertex ver;
 	cin >> ver.name;
@@ -64,17 +64,17 @@ unsigned getUniqueVerticesCount(Edge*& edges, unsigned edgesCount)
 	// Array to store unique vertices, used as impromptu cache
 	char uniqueVertices[MAX_VERTICES][STR_MAX_LEN + 1];
 	unsigned uniqueVerticesCount = 0;
-	
+
 	unsigned startIndex = 0;
-	for (size_t i = 0; i < edgesCount; i++) 
+	for (size_t i = 0; i < edgesCount; i++)
 	{
 		bool foundStart = false;
 		bool foundEnd = false;
 
 		// Check if the start vertex is unique
-		for (unsigned j = 0; j < uniqueVerticesCount; j++) 
+		for (unsigned j = 0; j < uniqueVerticesCount; j++)
 		{
-			if (strcmp(edges[i].start.name, uniqueVertices[j]) == 0) 
+			if (strcmp(edges[i].start.name, uniqueVertices[j]) == 0)
 			{
 				foundStart = true;
 				break;
@@ -89,9 +89,9 @@ unsigned getUniqueVerticesCount(Edge*& edges, unsigned edgesCount)
 		}
 
 		// Check if the end vertex is unique
-		for (unsigned j = 0; j < uniqueVerticesCount; j++) 
+		for (unsigned j = 0; j < uniqueVerticesCount; j++)
 		{
-			if (strcmp(edges[i].end.name, uniqueVertices[j]) == 0) 
+			if (strcmp(edges[i].end.name, uniqueVertices[j]) == 0)
 			{
 				foundEnd = true;
 				break;
@@ -99,7 +99,7 @@ unsigned getUniqueVerticesCount(Edge*& edges, unsigned edgesCount)
 		}
 
 		// Add end vertex if it's unique
-		if (!foundEnd) 
+		if (!foundEnd)
 		{
 			strcpy(uniqueVertices[startIndex], edges[i].end.name);
 			uniqueVerticesCount++;
@@ -118,7 +118,7 @@ Graph initializeGraph(unsigned edgesCount)
 	Graph graph;
 	graph.edges = edges;
 	graph.edgesCount = edgesCount;
-	
+
 	unsigned uniqueVerticesCount = getUniqueVerticesCount(graph.edges, graph.edgesCount);
 
 	graph.verticesCount = uniqueVerticesCount;
@@ -127,7 +127,7 @@ Graph initializeGraph(unsigned edgesCount)
 }
 
 // Function for creating a deep copy of the struct edges
-void deepCopyEdges(const Edge*& source, size_t edgesCount, Edge*& target) 
+void deepCopyEdges(const Edge*& source, size_t edgesCount, Edge*& target)
 {
 	for (size_t i = 0; i < edgesCount; i++)
 	{
@@ -142,7 +142,7 @@ void freeEdges(Edge* edges)
 }
 
 // Take edge as an argument
-void addEdgeToGraph(Edge& edge, Graph& graph) 
+void addEdgeToGraph(Edge& edge, Graph& graph)
 {
 	Edge* newEdges = new Edge[graph.edgesCount + 1];
 	deepCopyEdges(graph.edges, graph.edgesCount, newEdges);
@@ -183,10 +183,10 @@ unsigned findVertexDegree(const Graph& graph, Vertex& vertex)
 }
 
 // Check if a graph is full
-bool checkGraphFull(const Graph& graph) 
+bool checkGraphFull(const Graph& graph)
 {
 	// Iterate over each vertex in the graph
-	for (size_t i = 0; i < graph.verticesCount; i++) 
+	for (size_t i = 0; i < graph.verticesCount; i++)
 	{
 		Vertex currentVertex = graph.edges[i].start;
 		unsigned vertexDegree = findVertexDegree(graph, currentVertex);
@@ -202,7 +202,39 @@ bool checkGraphFull(const Graph& graph)
 
 void deleteEdge(Graph& graph, Edge& edge)
 {
-	// TODO: implement this last function
+	// Find the index of the edge to delete
+	int index = -1;
+	for (unsigned i = 0; i < graph.edgesCount; ++i)
+	{
+		if (strcmp(graph.edges[i].start.name, edge.start.name) == 0 &&
+			strcmp(graph.edges[i].end.name, edge.end.name) == 0)
+		{
+			index = i;
+			break;
+		}
+	}
+
+	if (index == -1)
+	{
+		cout << "Edge not found in the graph." << endl;
+		return;
+	}
+
+	for (unsigned i = index; i < graph.edgesCount - 1; ++i)
+	{
+		graph.edges[i] = graph.edges[i + 1];
+	}
+	
+	graph.edgesCount--;
+
+	Edge* newEdges = new Edge[graph.edgesCount];
+	for (unsigned i = 0; i < graph.edgesCount; ++i)
+	{
+		newEdges[i] = graph.edges[i];
+	}
+
+	delete[] graph.edges;
+	graph.edges = newEdges;
 }
 
 int main()
