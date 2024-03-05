@@ -4,6 +4,11 @@
 //Problem 1:
 void printSumFromFile(const char* fileName) 
 {
+    if (!fileName)
+    {
+        return;
+    }
+
     std::ifstream fileStream(fileName);
 
     if (!fileStream.is_open())
@@ -29,6 +34,11 @@ void printSumFromFile(const char* fileName)
 //Problem 2:
 unsigned findMaxNumFromFile(const char* fileName) 
 {
+    if (!fileName)
+    {
+        return 0;
+    }
+
     std::ifstream fileStream(fileName);
 
     if (!fileStream.is_open())
@@ -53,11 +63,39 @@ unsigned findMaxNumFromFile(const char* fileName)
     return maxNumber;
 }
 
+unsigned findCountOfSymbol(const char* fileName, const char soughtSymbol)
+{
+    if (!fileName)
+    {
+        return;
+    }
+
+    std::ifstream fileStream(fileName);
+
+    if (!fileStream.is_open())
+    {
+        std::cout << "The file could not open!" << std::endl;
+        return 0;
+    }
+
+    char character;
+
+    if (!fileStream.eof())
+    {
+        fileStream.get(character);
+
+        if (character == soughtSymbol)
+        {
+
+        }
+    }
+
+}
+
 //Problem 3:
 unsigned getLinesCount(const char* fileName) 
 {
-    //TO DO
-    // Упътване: Използвайте допълнителна функция
+
     return 0;
 }
 

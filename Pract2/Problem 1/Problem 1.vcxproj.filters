@@ -26,5 +26,8 @@
     <Text Include="maxNumber.txt">
       <Filter>Resource Files</Filter>
     </Text>
+    <Text Include="symbolFile.txt">
+      <Filter>Resource Files</Filter>
+    </Text>
   </ItemGroup>
 </Project>
