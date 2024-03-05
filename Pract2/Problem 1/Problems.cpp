@@ -67,7 +67,7 @@ unsigned findCountOfSymbol(const char* fileName, const char soughtSymbol)
 {
     if (!fileName)
     {
-        return;
+        return 0;
     }
 
     std::ifstream fileStream(fileName);
@@ -79,28 +79,34 @@ unsigned findCountOfSymbol(const char* fileName, const char soughtSymbol)
     }
 
     char character;
-
-    if (!fileStream.eof())
+    unsigned count = 0;
+    while (!fileStream.eof())
     {
         fileStream.get(character);
 
         if (character == soughtSymbol)
         {
-
+            count++;
         }
     }
 
+    return count;
 }
 
 //Problem 3:
 unsigned getLinesCount(const char* fileName) 
 {
+    if (!fileName)
+    {
+        return 1;
+    }
 
-    return 0;
+    return findCountOfSymbol(fileName, '\n');
 }
 
 int main() 
 {
     printSumFromFile("sum.txt");
     std::cout<< findMaxNumFromFile("maxNumber.txt") <<std::endl;
+    std::cout<< getLinesCount("symbolFile.txt") <<std::endl;
 }
