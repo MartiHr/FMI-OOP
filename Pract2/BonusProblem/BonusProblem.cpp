@@ -2,8 +2,6 @@
 #include<cstring>
 #include<fstream>
 
-const
-
 enum class ErrorInCatalog
 {
 	catalog_not_open,
@@ -24,12 +22,49 @@ struct Movie
 	unsigned int price;
 };
 
+unsigned getCharCount(std::ifstream& file, char soughtChar) 
+{
+	// Not really useful
+	if (!file.is_open()) 
+	{
+		return 0;
+	}
 
+	size_t currentPosition = file.tellg();
+	file.seekg(0, std::ios::beg);
+
+	unsigned int count = 0;
+	char currentChar;
+
+	while (!file.eof())
+	{
+		file.get(currentChar);
+
+		if (currentChar == soughtChar)
+		{
+			count++;
+		}
+	}
+
+	file.clear();
+	file.seekg(currentPosition);
+
+	return count;
+}
 
 SafeAnswer getNumberOfMovies(const char* catalogName)
 {
 	SafeAnswer answer;
+	
+	std::ifstream file(catalogName);
 
+	if (!file.is_open()) {
+		answer.error = ErrorInCatalog::catalog_not_open;
+		return answer;
+	}
+
+	answer.number = getCharCount(file, '\n') + 1;
+	answer.error = ErrorInCatalog::no_error_occurred;
 
 	return answer;
 }
@@ -37,7 +72,7 @@ SafeAnswer getNumberOfMovies(const char* catalogName)
 SafeAnswer averagePrice(const char* catalogName)
 {
 	SafeAnswer answer;
-	// 1. Отоворете файлов поток за четене, който приема аргумент catalofName
+	// 1. Отоворете файлов поток за четене, който приема аргумент catalogName
 	// 2. Проверете дали се е отворил файловият поток за четене с is_open()
 	//   Ако файловият поток, не се е отоворил успеш върнете answer с грешка
 	//   catalog_not_open
@@ -51,6 +86,11 @@ SafeAnswer averagePrice(const char* catalogName)
 	//    Ако броят на редовете е 0, то няма нищо във файла и върнете в answer 
 	//    грешка read_from_empty_catalog
 	// 6. Запишете резултата в answer (грешката е no_error_occurred)
+
+	// delete |
+	//        V
+	answer.number = 0;
+
 	return answer;
 }
 
@@ -65,6 +105,12 @@ SafeAnswer getMoviePrice(const char* catalogName, const char* movieName)
 	// точка 6 в averagePrice
 	// Ако не намерите movieName в каталога, върнете answer с грешка
 	// movie_not_in_catalog
+
+
+	// delete |
+	//        V
+	answer.number = 0;
+
 	return answer;
 }
 
@@ -82,7 +128,6 @@ Movie* saveMoviesInArray(std::ifstream& file, int numberOfMovies)
 void freeMoviesFromArray(Movie*& moviesArray)
 {
 }
-
 
 void sortMoviesInArray(Movie*& moviesArray, int numberOfMovies)
 {
