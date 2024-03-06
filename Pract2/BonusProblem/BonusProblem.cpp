@@ -134,11 +134,18 @@ SafeAnswer getMoviePrice(const char* catalogName, const char* movieName)
 	return answer;
 }
 
-
 Movie* saveMoviesInArray(std::ifstream& file, int numberOfMovies)
 {
+	Movie* movies = new Movie[numberOfMovies];
 
-	return nullptr;
+	int index = 0;
+	while (!file.eof() && index < numberOfMovies)
+	{
+		Movie current = readMovie(file);
+		movies[index++] = current;
+	}
+
+	return movies;
 }
 
 void freeMoviesFromArray(Movie*& moviesArray)
@@ -150,17 +157,17 @@ void sortMoviesInArray(Movie*& moviesArray, int numberOfMovies)
 {
 	for (int i = 0; i < numberOfMovies - 1; i++)
 	{
-		int minIndex = 0;
-		
+		int minIndex = i;
+
 		for (int j = i + 1; j < numberOfMovies; j++)
 		{
-			if (moviesArray[minIndex].price < moviesArray[j].price)
+			if (moviesArray[j].price < moviesArray[minIndex].price)
 			{
 				minIndex = j;
 			}
 		}
 
-		if (minIndex != 0)
+		if (minIndex != i)
 		{
 			std::swap(moviesArray[i], moviesArray[minIndex]);
 		}
@@ -169,27 +176,37 @@ void sortMoviesInArray(Movie*& moviesArray, int numberOfMovies)
 
 ErrorInCatalog saveMoviesSorted(const char* catalogName, const char* catalogSortedName)
 {
-	// tempInfo.txt се създава, ако не е съществувал до сега
-	std::ofstream tempFile("catalogSortedName");
+	std::ifstream ifs(catalogName);
 
-	if (!tempFile.is_open())
-	{
-		std::cout << "Problem while opening the file" << std::endl;
-		return 1;
+	if (!ifs.is_open()) {
+		return  ErrorInCatalog::catalog_not_open;
 	}
 
-	// Пишем текст
-	// tempFile << "New info\n";
-	// Пишем числа
-	// tempFile << 5 + 7 << "\n";
+	SafeAnswer ans = getNumberOfMovies(catalogName);
+	if (ans.error != ErrorInCatalog::no_error_occurred)
+	{
+		return ErrorInCatalog::read_from_empty_catalog;
+	}
 
-	tempFile.close();
+	int numberOfMovies = ans.number;
+	Movie* moviesArr = saveMoviesInArray(ifs, numberOfMovies);
+	sortMoviesInArray(moviesArr, numberOfMovies);
 
-	// Ако файл, отворен с файлов поток за писане, не съществува, то той се създава 
-	// Първо намерете колко филма има във файла с име catalogName 
-	// след това продължете с имплементацията на функцията
+	std::ofstream ofs(catalogSortedName);
+	
+	for (int i = 0; i < numberOfMovies; i++)
+	{
+		ofs << moviesArr[i].name << " " << moviesArr[i].price;
 
-	// Погледнете примера за писане във файл
+		if (i != numberOfMovies - 1)
+		{
+			ofs << '\n';
+		}
+	}
+	
+	ofs.close();
+	delete[] moviesArr;
+
 	return ErrorInCatalog::no_error_occurred;
 }
 
