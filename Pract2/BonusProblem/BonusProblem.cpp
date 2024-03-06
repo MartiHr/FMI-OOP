@@ -102,20 +102,31 @@ SafeAnswer averagePrice(const char* catalogName)
 SafeAnswer getMoviePrice(const char* catalogName, const char* movieName)
 {
 	SafeAnswer answer;
-	// Първите две стъпки са аналогични на стъпките от averagePrice
-	// Започнете да четете от файла (файловия поток за четене) с оператор ">>"
-	// Оператор >> взема входа форматирано. Четете име на файл и цена заедно
-	// file >> <име-на-файл> >> <цена>;
-	// Ако името на файла е същото като movieName, върнете отговор като от 
-	// точка 6 в averagePrice
-	// Ако не намерите movieName в каталога, върнете answer с грешка
-	// movie_not_in_catalog
 
+	SafeAnswer answer;
+	std::ifstream file(catalogName);
 
-	// delete |
-	//        V
-	answer.number = 0;
+	if (!file.is_open())
+	{
+		answer.error = ErrorInCatalog::catalog_not_open;
+		return answer;
+	}
 
+	while (!file.eof())
+	{
+		Movie current;
+		file >> current.name >> current.price;
+
+		if (current.name == movieName)
+		{
+			answer.error = ErrorInCatalog::no_error_occurred;
+			answer.number = current.price;
+			return answer;
+		}
+	}
+	
+	answer.error = ErrorInCatalog::movie_not_in_catalog;
+	
 	return answer;
 }
 
