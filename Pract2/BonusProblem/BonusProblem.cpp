@@ -46,6 +46,14 @@ unsigned getCharCount(std::ifstream& file, char soughtChar)
 	return count;
 }
 
+Movie readMovie(std::ifstream& file)
+{
+	Movie movie;
+	file >> movie.name >> movie.price;
+
+	return movie;
+}
+
 SafeAnswer getNumberOfMovies(const char* catalogName)
 {
 	SafeAnswer answer;
@@ -86,8 +94,7 @@ SafeAnswer averagePrice(const char* catalogName)
 
 	while (!file.eof())
 	{
-		Movie current;
-		file >> current.name >> current.price;
+		Movie current = readMovie(file);
 
 		moviesCount++;
 		priceSum += current.price;
@@ -112,8 +119,7 @@ SafeAnswer getMoviePrice(const char* catalogName, const char* movieName)
 
 	while (!file.eof())
 	{
-		Movie current;
-		file >> current.name >> current.price;
+		Movie current = readMovie(file);
 
 		if (strcmp(current.name, movieName) == 0)
 		{
@@ -128,19 +134,17 @@ SafeAnswer getMoviePrice(const char* catalogName, const char* movieName)
 	return answer;
 }
 
-Movie readMovie(std::ifstream& file)
-{
-	Movie movie;
-	return movie;
-}
 
 Movie* saveMoviesInArray(std::ifstream& file, int numberOfMovies)
 {
+
 	return nullptr;
 }
 
 void freeMoviesFromArray(Movie*& moviesArray)
 {
+	// Check???
+	delete[] moviesArray;
 }
 
 void sortMoviesInArray(Movie*& moviesArray, int numberOfMovies)
@@ -155,6 +159,22 @@ void sortMoviesInArray(Movie*& moviesArray, int numberOfMovies)
 
 ErrorInCatalog saveMoviesSorted(const char* catalogName, const char* catalogSortedName)
 {
+	// tempInfo.txt се създава, ако не е съществувал до сега
+	std::ofstream tempFile("catalogSortedName");
+
+	if (!tempFile.is_open())
+	{
+		std::cout << "Problem while opening the file" << std::endl;
+		return 1;
+	}
+
+	// Пишем текст
+	tempFile << "New info\n";
+	// Пишем числа
+	tempFile << 5 + 7 << "\n";
+
+	tempFile.close();
+
 	// Ако файл, отворен с файлов поток за писане, не съществува, то той се създава 
 	// Първо намерете колко филма има във файла с име catalogName 
 	// след това продължете с имплементацията на функцията
