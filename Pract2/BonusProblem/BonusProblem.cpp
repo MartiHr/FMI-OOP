@@ -88,7 +88,7 @@ SafeAnswer averagePrice(const char* catalogName)
 	{
 		Movie current;
 		file >> current.name >> current.price;
-		
+
 		moviesCount++;
 		priceSum += current.price;
 	}
@@ -101,8 +101,6 @@ SafeAnswer averagePrice(const char* catalogName)
 
 SafeAnswer getMoviePrice(const char* catalogName, const char* movieName)
 {
-	SafeAnswer answer;
-
 	SafeAnswer answer;
 	std::ifstream file(catalogName);
 
@@ -117,16 +115,16 @@ SafeAnswer getMoviePrice(const char* catalogName, const char* movieName)
 		Movie current;
 		file >> current.name >> current.price;
 
-		if (current.name == movieName)
+		if (strcmp(current.name, movieName) == 0)
 		{
 			answer.error = ErrorInCatalog::no_error_occurred;
 			answer.number = current.price;
 			return answer;
 		}
 	}
-	
+
 	answer.error = ErrorInCatalog::movie_not_in_catalog;
-	
+
 	return answer;
 }
 
