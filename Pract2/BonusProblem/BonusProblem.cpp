@@ -143,18 +143,28 @@ Movie* saveMoviesInArray(std::ifstream& file, int numberOfMovies)
 
 void freeMoviesFromArray(Movie*& moviesArray)
 {
-	// Check???
 	delete[] moviesArray;
 }
 
 void sortMoviesInArray(Movie*& moviesArray, int numberOfMovies)
 {
-	// Selection sort
-	// Използвайте алгоритъма на пряката селекция.
-	// 1. Намирате индекса на най-малкия елемент в подмасива [i; numberOfMovies],
-	//    където i е индексът на текущия елемент от масива. 
-	// 2. Разменяте елемента на текущата позиция с елемента с най-малка стойнсот 
-	//    в подмасива [i; numberOfMovies]
+	for (int i = 0; i < numberOfMovies - 1; i++)
+	{
+		int minIndex = 0;
+		
+		for (int j = i + 1; j < numberOfMovies; j++)
+		{
+			if (moviesArray[minIndex].price < moviesArray[j].price)
+			{
+				minIndex = j;
+			}
+		}
+
+		if (minIndex != 0)
+		{
+			std::swap(moviesArray[i], moviesArray[minIndex]);
+		}
+	}
 }
 
 ErrorInCatalog saveMoviesSorted(const char* catalogName, const char* catalogSortedName)
