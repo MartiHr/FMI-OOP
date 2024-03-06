@@ -176,16 +176,15 @@ void sortMoviesInArray(Movie*& moviesArray, int numberOfMovies)
 
 ErrorInCatalog saveMoviesSorted(const char* catalogName, const char* catalogSortedName)
 {
-	std::ifstream ifs(catalogName);
-
-	if (!ifs.is_open()) {
-		return  ErrorInCatalog::catalog_not_open;
-	}
-
 	SafeAnswer ans = getNumberOfMovies(catalogName);
 	if (ans.error != ErrorInCatalog::no_error_occurred)
 	{
 		return ErrorInCatalog::read_from_empty_catalog;
+	}
+
+	std::ifstream ifs(catalogName);
+	if (!ifs.is_open()) {
+		return  ErrorInCatalog::catalog_not_open;
 	}
 
 	int numberOfMovies = ans.number;
