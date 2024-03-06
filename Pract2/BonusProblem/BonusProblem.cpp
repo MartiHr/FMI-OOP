@@ -169,9 +169,9 @@ ErrorInCatalog saveMoviesSorted(const char* catalogName, const char* catalogSort
 	}
 
 	// Пишем текст
-	tempFile << "New info\n";
+	// tempFile << "New info\n";
 	// Пишем числа
-	tempFile << 5 + 7 << "\n";
+	// tempFile << 5 + 7 << "\n";
 
 	tempFile.close();
 
