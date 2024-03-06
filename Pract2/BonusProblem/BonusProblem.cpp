@@ -16,20 +16,14 @@ struct SafeAnswer
 	ErrorInCatalog error;
 };
 
-struct Movie 
+struct Movie
 {
 	char name[128];
 	unsigned int price;
 };
 
-unsigned getCharCount(std::ifstream& file, char soughtChar) 
+unsigned getCharCount(std::ifstream& file, char soughtChar)
 {
-	// Not really useful
-	if (!file.is_open()) 
-	{
-		return 0;
-	}
-
 	size_t currentPosition = file.tellg();
 	file.seekg(0, std::ios::beg);
 
@@ -55,7 +49,7 @@ unsigned getCharCount(std::ifstream& file, char soughtChar)
 SafeAnswer getNumberOfMovies(const char* catalogName)
 {
 	SafeAnswer answer;
-	
+
 	std::ifstream file(catalogName);
 
 	if (!file.is_open()) {
@@ -72,24 +66,35 @@ SafeAnswer getNumberOfMovies(const char* catalogName)
 SafeAnswer averagePrice(const char* catalogName)
 {
 	SafeAnswer answer;
-	// 1. Отоворете файлов поток за четене, който приема аргумент catalogName
-	// 2. Проверете дали се е отворил файловият поток за четене с is_open()
-	//   Ако файловият поток, не се е отоворил успеш върнете answer с грешка
-	//   catalog_not_open
-	// 3. Създайте променливи, където ще съхранявате сумата на цените и броят 
-	//   на всички филми
-	// 4. Започнете да четете от файла (файловия поток за четене) с оператор ">>"
-	//    Оператор >> взема входа форматирано. Четете име на файл и цена заедно
-	//    file >> <име-на-файл> >> <цена>;
-	//    По този начин четете за 1 итерация 1 ред => броят на редовете = броят на итерациите
-	// 5. Преди да върнете отговор, проверете дали броят на редовере > 0
-	//    Ако броят на редовете е 0, то няма нищо във файла и върнете в answer 
-	//    грешка read_from_empty_catalog
-	// 6. Запишете резултата в answer (грешката е no_error_occurred)
+	std::ifstream file(catalogName);
 
-	// delete |
-	//        V
-	answer.number = 0;
+	if (!file.is_open())
+	{
+		answer.error = ErrorInCatalog::catalog_not_open;
+		return answer;
+	}
+
+	unsigned priceSum = 0;
+	unsigned moviesCount = 0;
+
+	answer = getNumberOfMovies(catalogName);
+	if (answer.number == 0)
+	{
+		answer.error = ErrorInCatalog::read_from_empty_catalog;
+		return answer;
+	}
+
+	while (!file.eof())
+	{
+		Movie current;
+		file >> current.name >> current.price;
+		
+		moviesCount++;
+		priceSum += current.price;
+	}
+
+	answer.number = priceSum / moviesCount;
+	answer.error = ErrorInCatalog::no_error_occurred;
 
 	return answer;
 }
@@ -164,7 +169,7 @@ int main()
 	}
 
 	SafeAnswer safePrice = getMoviePrice("movieCatalog.txt", "Black-bullet");
-	if (safePrice.error == ErrorInCatalog::no_error_occurred) 
+	if (safePrice.error == ErrorInCatalog::no_error_occurred)
 	{
 		std::cout << "The price for the Black bullet movies is: " << safePrice.number << std::endl;
 	}
