@@ -10,7 +10,6 @@ const int MAX_POWER = 1000;
 
 constexpr char FILE_NAME[] = "pokemons.dat";
 
-
 enum class Type
 {
 	NORMAL,
@@ -27,6 +26,11 @@ struct Pokemon
 	char name[MAX_NAME_LEN + 1];
 	Type type;
 	unsigned power;
+};
+
+struct PokemonHandler
+{
+	const char* filename;
 };
 
 void initPokemon(Pokemon& pokemon, char name[MAX_NAME_LEN], Type type, unsigned power)
@@ -93,11 +97,26 @@ void readPokemonFromBinary(std::ifstream& file, Pokemon& pokemon)
 {
 	if (!file.is_open())
 	{
-		std::cout << "File not open";
+		std::cout << "File did not open";
 		return;
 	}
 
 	file.read((char*)&pokemon, sizeof(pokemon));
+}
+
+PokemonHandler newPokemonHandler(const char* filename)
+{
+	PokemonHandler ph;
+
+	if (!filename)
+	{
+		ph.filename = " ";
+		return ph;
+	}
+
+	ph.filename = filename;
+
+	return ph;
 }
 
 int main()
@@ -114,10 +133,15 @@ int main()
 	outFile.close();
 	
 	// Read a pokemon from a binary file
-	std::ifstream file(FILE_NAME, std::ios::binary);
+	std::ifstream inFile(FILE_NAME, std::ios::binary);
 	Pokemon p2;
-	readPokemonFromBinary(file, p2);
+	readPokemonFromBinary(inFile, p2);
 	printPokemon(p2);
-	file.close();
+	inFile.close();
+
+	//Pokemon handler functions
+	
+	// Create a pokemon handler
+	PokemonHandler ph = newPokemonHandler(FILE_NAME);
 
 }
