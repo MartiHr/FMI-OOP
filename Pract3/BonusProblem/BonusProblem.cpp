@@ -1,11 +1,15 @@
 #pragma warning(disable: 4996)
 #include <iostream>
+#include <fstream>
 #include <cstring>
 
 const int MAX_NAME_LEN = 50;
 const int BUFFER_SIZE = MAX_NAME_LEN + 1;
 const int LEAST_POWER = 10;
 const int MAX_POWER = 1000;
+
+constexpr char FILE_NAME[] = "pokemons.dat";
+
 
 enum class Type
 {
@@ -29,7 +33,7 @@ void initPokemon(Pokemon& pokemon, char name[MAX_NAME_LEN], Type type, unsigned 
 {
 	if (power < 10 || power > 100)
 	{
-		std::cout << "Invalid power";
+		std::cout << "Invalid input";
 		return;
 	}
 
@@ -74,12 +78,46 @@ void printPokemon(Pokemon& pokemon)
 	std::cout << pokemon.power << std::endl;
 }
 
+void writePokemonToBinary(std::ofstream& file, Pokemon& pokemon)
+{
+	if (!file.is_open())
+	{
+		std::cout << "File not open";
+		return;
+	}
+
+	file.write((const char*)&pokemon, sizeof(pokemon));
+}
+
+void readPokemonFromBinary(std::ifstream& file, Pokemon& pokemon)
+{
+	if (!file.is_open())
+	{
+		std::cout << "File not open";
+		return;
+	}
+
+	file.read((char*)&pokemon, sizeof(pokemon));
+}
+
 int main()
 {
-	Pokemon p;
-	char name[MAX_NAME_LEN] = "Pikachu";
-	initPokemon(p, name, Type::ELECTRIC, 10);
-	printPokemon(p);
+	// Read a pokemon from the standard input and print it
+	Pokemon p1;
+	char name[] = "Pikachu";
+	initPokemon(p1, name, Type::ELECTRIC, 10);
+	printPokemon(p1);
 
+	// Write a pokemon to a binary file
+	std::ofstream outFile(FILE_NAME, std::ios::binary);
+	writePokemonToBinary(outFile, p1);
+	outFile.close();
+	
+	// Read a pokemon from a binary file
+	std::ifstream file(FILE_NAME, std::ios::binary);
+	Pokemon p2;
+	readPokemonFromBinary(file, p2);
+	printPokemon(p2);
+	file.close();
 
 }
