@@ -28,11 +28,6 @@ struct Pokemon
 	unsigned power;
 };
 
-struct PokemonHandler
-{
-	const char* filename;
-};
-
 void initPokemon(Pokemon& pokemon, char name[MAX_NAME_LEN], Type type, unsigned power)
 {
 	if (power < 10 || power > 100)
@@ -104,6 +99,12 @@ void readPokemonFromBinary(std::ifstream& file, Pokemon& pokemon)
 	file.read((char*)&pokemon, sizeof(pokemon));
 }
 
+
+struct PokemonHandler
+{
+	const char* filename;
+};
+
 PokemonHandler newPokemonHandler(const char* filename)
 {
 	PokemonHandler ph;
@@ -115,8 +116,23 @@ PokemonHandler newPokemonHandler(const char* filename)
 	}
 
 	ph.filename = filename;
-
 	return ph;
+}
+
+int size(const PokemonHandler& ph)
+{
+	std::ifstream file(ph.filename);
+
+	if (!file.is_open())
+	{
+		return -1;
+	}
+
+	file.seekg(0, std::ios::end);
+	int fileSize = file.tellg();
+	file.seekg(0, std::ios::beg);
+
+	return fileSize / sizeof(Pokemon);
 }
 
 int main()
@@ -131,7 +147,7 @@ int main()
 	std::ofstream outFile(FILE_NAME, std::ios::binary);
 	writePokemonToBinary(outFile, p1);
 	outFile.close();
-	
+
 	// Read a pokemon from a binary file
 	std::ifstream inFile(FILE_NAME, std::ios::binary);
 	Pokemon p2;
@@ -140,7 +156,7 @@ int main()
 	inFile.close();
 
 	//Pokemon handler functions
-	
+
 	// Create a pokemon handler
 	PokemonHandler ph = newPokemonHandler(FILE_NAME);
 
