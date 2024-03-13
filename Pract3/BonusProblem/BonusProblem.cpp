@@ -160,4 +160,6 @@ int main()
 	// Create a pokemon handler
 	PokemonHandler ph = newPokemonHandler(FILE_NAME);
 
+	// Number of pokemons 
+	std::cout << size(ph);
 }
