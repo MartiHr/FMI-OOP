@@ -99,7 +99,6 @@ void readPokemonFromBinary(std::ifstream& file, Pokemon& pokemon)
 	file.read((char*)&pokemon, sizeof(pokemon));
 }
 
-
 struct PokemonHandler
 {
 	const char* filename;
@@ -128,11 +127,58 @@ int size(const PokemonHandler& ph)
 		return -1;
 	}
 
+	int currentG = file.tellg();
 	file.seekg(0, std::ios::end);
 	int fileSize = file.tellg();
-	file.seekg(0, std::ios::beg);
+	file.seekg(currentG);
 
 	return fileSize / sizeof(Pokemon);
+}
+
+Pokemon at(const PokemonHandler& ph, int i)
+{
+	int sizeOfCollection = size(ph);
+
+	Pokemon p;
+	std::ifstream file(ph.filename, std::ios::binary);
+
+	if (!file.is_open() || i < 0 || i >= sizeOfCollection)
+	{
+		strcpy(p.name, " ");
+		p.power = 0;
+		p.type = Type::NORMAL;
+
+		return p;
+	}
+
+	file.seekg(sizeof(Pokemon) * i, std::ios::beg);
+	readPokemonFromBinary(file, p);
+
+	return p;
+}
+
+void swap(const PokemonHandler& ph, int i, int j)
+{
+	int sizeOfCollection = size(ph);
+
+	if (i < 0 || i >= sizeOfCollection || j < 0 || j >= sizeOfCollection)
+	{
+		return;
+	}
+
+	Pokemon first = at(ph, i);
+	Pokemon second = at(ph, j);
+
+	std::ofstream file(ph.filename, std::ios::binary);
+
+	if (!file.is_open())
+	{
+		return;
+	}
+
+	file.seekp(j * sizeof(Pokemon), std::ios::beg);
+	writePokemonToBinary(file, first);
+	writePokemonToBinary(file, second);
 }
 
 int main()
@@ -161,5 +207,11 @@ int main()
 	PokemonHandler ph = newPokemonHandler(FILE_NAME);
 
 	// Number of pokemons 
-	std::cout << size(ph);
+	std::cout << size(ph) << std::endl;
+
+	// Print pokemon at index
+	Pokemon newP = at(ph, 1);
+	printPokemon(newP);
+
+
 }
