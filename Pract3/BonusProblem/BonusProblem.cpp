@@ -194,6 +194,11 @@ void swap(const PokemonHandler& ph, int i, int j)
 	file.seekp(currentP, std::ios::beg);
 }
 
+void insert(const PokemonHandler& ph, const Pokemon& pokemon)
+{
+
+}
+
 int main()
 {
 	// Read a pokemon from the standard input and print it
