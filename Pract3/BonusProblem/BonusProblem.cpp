@@ -8,7 +8,8 @@ const int BUFFER_SIZE = MAX_NAME_LEN + 1;
 const int LEAST_POWER = 10;
 const int MAX_POWER = 1000;
 
-constexpr char FILE_NAME[] = "pokemons.dat";
+constexpr char FILE_NAME_BINARY[] = "pokemons.dat";
+constexpr char FILE_NAME_TEXT[] = "pokemonsText.txt";
 
 enum class Type
 {
@@ -28,7 +29,7 @@ struct Pokemon
 	unsigned power;
 };
 
-void initPokemon(Pokemon& pokemon, char name[MAX_NAME_LEN], Type type, unsigned power)
+void initPokemon(Pokemon& pokemon, char name[MAX_NAME_LEN + 1], Type type, unsigned power)
 {
 	if (power < 10 || power > 100)
 	{
@@ -47,25 +48,53 @@ void printType(Type type)
 	switch (type)
 	{
 	case Type::NORMAL:
-		std::cout << "Normal" << std::endl;
+		std::cout << "Normal";
 		break;
 	case Type::FIRE:
-		std::cout << "Fire" << std::endl;
+		std::cout << "Fire";
 		break;
 	case Type::WATER:
-		std::cout << "Water" << std::endl;
+		std::cout << "Water";
 		break;
 	case Type::GRASS:
-		std::cout << "Grass" << std::endl;
+		std::cout << "Grass";
 		break;
 	case Type::ELECTRIC:
-		std::cout << "Electric" << std::endl;
+		std::cout << "Electric";
 		break;
 	case Type::GHOST:
-		std::cout << "Ghost" << std::endl;
+		std::cout << "Ghost";
 		break;
 	case Type::FLYING:
-		std::cout << "Flying" << std::endl;
+		std::cout << "Flying";
+		break;
+	}
+}
+
+void printType(Type type, std::ofstream& file)
+{
+	switch (type)
+	{
+	case Type::NORMAL:
+		file << "Normal";
+		break;
+	case Type::FIRE:
+		file << "Fire";
+		break;
+	case Type::WATER:
+		file << "Water";
+		break;
+	case Type::GRASS:
+		file << "Grass";
+		break;
+	case Type::ELECTRIC:
+		file << "Electric";
+		break;
+	case Type::GHOST:
+		file << "Ghost";
+		break;
+	case Type::FLYING:
+		file << "Flying";
 		break;
 	}
 }
@@ -74,10 +103,11 @@ void printPokemon(Pokemon& pokemon)
 {
 	std::cout << pokemon.name << std::endl;
 	printType(pokemon.type);
+	std::cout << std::endl;
 	std::cout << pokemon.power << std::endl;
 }
 
-void writePokemonToBinary(std::ofstream& file, Pokemon& pokemon)
+void writePokemonToBinary(std::ofstream& file, const Pokemon& pokemon)
 {
 	if (!file.is_open())
 	{
@@ -144,7 +174,6 @@ Pokemon at(const PokemonHandler& ph, int i)
 	p.power = 0;
 	p.type = Type::NORMAL;
 
-
 	if (i < 0 || i >= sizeOfCollection)
 	{
 		std::cout << "Index outside of bounds" << std::endl;
@@ -196,7 +225,119 @@ void swap(const PokemonHandler& ph, int i, int j)
 
 void insert(const PokemonHandler& ph, const Pokemon& pokemon)
 {
+	std::ofstream file(ph.filename, std::ios::binary | std::ios::app);
 
+	if (!file.is_open())
+	{
+		return;
+	}
+
+	int current = file.tellp();
+
+	file.seekp(0, std::ios::end);
+	writePokemonToBinary(file, pokemon);
+
+	file.seekp(current);
+}
+
+void textify(const PokemonHandler& ph, const char* filename)
+{
+	int sizeOfCollection = size(ph);
+
+	std::ofstream file(filename);
+
+	if (!file.is_open())
+	{
+		std::cout << "File did not open" << std::endl;
+		return;
+	}
+
+	for (int i = 0; i < sizeOfCollection; i++)
+	{
+		Pokemon current = at(ph, i);
+		file << current.name << ' ' << current.power << ' ';
+		printType(current.type, file);
+
+		if (i != sizeOfCollection - 1)
+		{
+			file << '\n';
+		}
+	}
+
+	file.close();
+}
+
+Type typeStrToEnum(char str[MAX_NAME_LEN + 1])
+{
+	Type type;
+
+	if (strcmp(str, "Normal") == 0)
+	{
+		type = Type::NORMAL;
+	}
+	else if (strcmp(str, "Fire") == 0)
+	{
+		type = Type::FIRE;
+	}
+	else if (strcmp(str, "Water") == 0)
+	{
+		type = Type::WATER;
+	}
+	else if (strcmp(str, "Grass") == 0)
+	{
+		type = Type::GRASS;
+	}
+	else if (strcmp(str, "Electric") == 0)
+	{
+		type = Type::ELECTRIC;
+	}
+	else if (strcmp(str, "Ghost") == 0)
+	{
+		type = Type::GHOST;
+	}
+	else if (strcmp(str, "Flying") == 0)
+	{
+		type = Type::FLYING;
+	}
+	else
+	{
+		type = Type::NORMAL;
+	}
+
+	return type;
+}
+
+void untextify(const PokemonHandler& ph, const char* filename)
+{
+	std::ifstream ifs(filename);
+	std::ofstream ofs(ph.filename, std::ios::binary);
+
+	if (!ifs.is_open() || !ofs.is_open())
+	{
+		std::cout << "File did not open" << std::endl;
+		return;
+	}
+
+	char name[MAX_NAME_LEN + 1];
+	unsigned power;
+	char typeAsStr[MAX_NAME_LEN + 1];
+
+	while (!ifs.eof())
+	{
+		ifs >> name >> power >> typeAsStr;
+
+		if (power < LEAST_POWER || power > MAX_POWER)
+		{
+			std::cout << "Invalid power for pokemon " << name << std::endl;
+			continue;
+		}
+
+		Type type = typeStrToEnum(typeAsStr);
+		
+		Pokemon current;
+		initPokemon(current, name, type, power);
+		writePokemonToBinary(ofs, current);
+	}
 }
 
 int main()
@@ -213,13 +354,15 @@ int main()
 	printPokemon(p2);
 
 	// Write a pokemon to a binary file
-	std::ofstream outFile(FILE_NAME, std::ios::binary);
+	std::cout << std::endl;
+	std::ofstream outFile(FILE_NAME_BINARY, std::ios::binary);
 	writePokemonToBinary(outFile, p1);
 	writePokemonToBinary(outFile, p2);
 	outFile.close();
 
 	// Read a pokemon from a binary file
-	std::ifstream inFile(FILE_NAME, std::ios::binary);
+	std::cout << std::endl;
+	std::ifstream inFile(FILE_NAME_BINARY, std::ios::binary);
 	Pokemon pokemonFromBinary;
 	readPokemonFromBinary(inFile, pokemonFromBinary);
 	printPokemon(pokemonFromBinary);
@@ -228,17 +371,20 @@ int main()
 	//Pokemon handler functions
 
 	// Create a pokemon handler
-	PokemonHandler ph = newPokemonHandler(FILE_NAME);
+	PokemonHandler ph = newPokemonHandler(FILE_NAME_BINARY);
 
 	// Number of pokemons 
+	std::cout << std::endl;
 	std::cout << size(ph) << std::endl;
 
 	// Print pokemon at index
+	std::cout << std::endl;
 	Pokemon invalid = at(ph, -1);
 	Pokemon newP = at(ph, 1);
 	printPokemon(newP);
 
 	// Swap pokemons
+	std::cout << std::endl;
 	Pokemon first = at(ph, 0);
 	printPokemon(first);
 
@@ -247,12 +393,27 @@ int main()
 
 	swap(ph, 1, 2);
 	swap(ph, 0, 1);
-	
+
 	first = at(ph, 0);
 	second = at(ph, 1);
-	
+
 	printPokemon(first);
 	printPokemon(second);
+
+	// Insert pokemon
+	std::cout << std::endl;
+	insert(ph, p1);
+	Pokemon third = at(ph, 2);
+	printPokemon(third);
+
+	// Textify
+	textify(ph, FILE_NAME_TEXT);
+
+	// Untextify
+	untextify(ph, FILE_NAME_TEXT);
+	Pokemon pFromText = at(ph, 1);
+	std::cout << std::endl;
+	printPokemon(pFromText);
 
 	return 0;
 }
