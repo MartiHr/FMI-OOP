@@ -7,6 +7,7 @@ const int MAX_NAME_LEN = 50;
 const int BUFFER_SIZE = MAX_NAME_LEN + 1;
 const int LEAST_POWER = 10;
 const int MAX_POWER = 1000;
+const int MAX_FILE_LENGTH = 128;
 
 constexpr char FILE_NAME_BINARY[] = "pokemons.dat";
 constexpr char FILE_NAME_TEXT[] = "pokemonsText.txt";
@@ -131,20 +132,20 @@ void readPokemonFromBinary(std::ifstream& file, Pokemon& pokemon)
 
 struct PokemonHandler
 {
-	const char* filename;
+	char filename[MAX_FILE_LENGTH];
 };
 
 PokemonHandler newPokemonHandler(const char* filename)
 {
 	PokemonHandler ph;
-	ph.filename = " ";
+	strcpy(ph.filename, " ");
 
 	if (!filename)
 	{
 		return ph;
 	}
 
-	ph.filename = filename;
+	strcpy(ph.filename, filename);
 	return ph;
 }
 
@@ -229,6 +230,7 @@ void insert(const PokemonHandler& ph, const Pokemon& pokemon)
 
 	if (!file.is_open())
 	{
+		std::cout << "File did not open" << std::endl;
 		return;
 	}
 
@@ -238,7 +240,16 @@ void insert(const PokemonHandler& ph, const Pokemon& pokemon)
 	writePokemonToBinary(file, pokemon);
 
 	file.seekp(current);
+
+	int changeIndex = size(ph) - 1;
+
+	while ((at(ph, changeIndex).power < at(ph, changeIndex - 1).power) && changeIndex > 0)
+	{
+		swap(ph, changeIndex, changeIndex - 1);
+		changeIndex--;
+	}
 }
+
 
 void textify(const PokemonHandler& ph, const char* filename)
 {
@@ -333,7 +344,7 @@ void untextify(const PokemonHandler& ph, const char* filename)
 		}
 
 		Type type = typeStrToEnum(typeAsStr);
-		
+
 		Pokemon current;
 		initPokemon(current, name, type, power);
 		writePokemonToBinary(ofs, current);
