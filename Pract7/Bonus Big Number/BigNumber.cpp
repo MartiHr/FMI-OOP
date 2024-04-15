@@ -45,8 +45,8 @@ BigNumber& BigNumber::operator*=(const BigNumber& other)
 
 BigNumber BigNumber::operator*(const BigNumber& other) const
 {
-	int len1 = strlen(this->getStringRepresentation());
-	int len2 = strlen(other.getStringRepresentation());
+	int len1 = this->stringRepresentation.length();
+	int len2 = other.stringRepresentation.length();
 	int len3 = len1 + len2; // maximum length of result
 
 	int* result = new int[len3](); // initialize result array with 0
