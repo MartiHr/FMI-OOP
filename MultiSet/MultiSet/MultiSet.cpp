@@ -82,7 +82,7 @@ unsigned MultiSet::extractNumber(unsigned number) const
 
 	for (int i = 0; i < k; i++)
 	{
-		if (checkBitValue(buckets[currentBucketIndex], currentInnerIndex))
+		if (checkBitValue(buckets[currentBucketIndex], 7 - currentInnerIndex))
 		{
 			toggleBit(extract, extractIndex);
 		}

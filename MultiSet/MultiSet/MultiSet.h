@@ -33,8 +33,8 @@ public:
 	unsigned getNumberOccurences(unsigned number) const;
 	void printAllNumbers() const;
 	void printMemoryView() const;
-	void serialize(const char* fileName) const
-	void deserialize(const char* fileName) 
+	void serialize(const char* fileName) const;
+	void deserialize(const char* fileName);
 };
 
 bool checkBitValue(unsigned number, unsigned index);
