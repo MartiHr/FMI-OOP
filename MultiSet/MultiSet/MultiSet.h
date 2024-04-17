@@ -8,7 +8,7 @@ class MultiSet
 	unsigned n = 0;
 	unsigned k = 0;
 
-	unsigned bitsForElement = 0;
+	unsigned maxBitsForElement = 0;
 	unsigned bucketsCount = 0;
 	uint8_t* buckets = nullptr;
 
@@ -21,6 +21,8 @@ class MultiSet
 	unsigned getInnerIndex(unsigned outerIndex) const;
 	unsigned extractNumber(unsigned number) const;
 	void setNumber(unsigned number, unsigned count);
+	void printAllNumbers() const;
+	void printNumber(unsigned number, unsigned occurences) const;
 public:
 	MultiSet(unsigned n, unsigned k);
 	MultiSet(const MultiSet& other);

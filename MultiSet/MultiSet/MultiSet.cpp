@@ -1,5 +1,4 @@
-#include "MultiSet.h";
-#include <bitset>
+#include "MultiSet.h"
 #include <bitset>
 
 void MultiSet::free()
@@ -8,7 +7,7 @@ void MultiSet::free()
 	k = 0;
 	delete[] buckets;
 	bucketsCount = 0;
-	bitsForElement = 0;
+	maxBitsForElement = 0;
 	buckets = nullptr;
 }
 
@@ -25,12 +24,12 @@ void MultiSet::copyFrom(const MultiSet& other)
 	}
 
 	bucketsCount = other.bucketsCount;
-	bitsForElement = other.bitsForElement;
+	maxBitsForElement = other.maxBitsForElement;
 }
 
 unsigned MultiSet::getNumberStartIndex(unsigned number) const
 {
-	return number * bitsForElement;
+	return number * k;
 }
 
 unsigned MultiSet::getBucketIndex(unsigned index) const
@@ -86,7 +85,7 @@ unsigned MultiSet::extractNumber(unsigned number) const
 	unsigned extract = 0;
 	unsigned extractIndex = 0;
 
-	for (int i = 0; i < bitsForElement; i++)
+	for (int i = 0; i < k; i++)
 	{
 		if (checkBitValue(buckets[currentBucketIndex], currentInnerIndex))
 		{
@@ -116,7 +115,7 @@ void MultiSet::setNumber(unsigned number, unsigned count)
 
 	unsigned setIndex = 0;
 
-	for (int i = 0; i < bitsForElement; i++)
+	for (int i = 0; i < k; i++)
 	{
 		if (checkBitValue(count, setIndex))
 		{
@@ -139,13 +138,31 @@ void MultiSet::setNumber(unsigned number, unsigned count)
 	}
 }
 
+void MultiSet::printAllNumbers() const
+{
+	std::cout << '{';
+
+	for (int i = 0; i < n; i++)
+	{
+		unsigned numOccurences = getNumberOccurences(i);
+		printNumber(i, numOccurences);
+	}
+
+	std::cout << '}';
+}
+
+void MultiSet::printNumber(unsigned number, unsigned occurences) const
+{
+
+}
+
 MultiSet::MultiSet(unsigned n, unsigned k)
 {
 	this->n = n;
 	this->k = k;
 	// elements in bucket should be changed
 	// TODO: make sure bits for element is correct
-	bitsForElement = (1 << k) - 1;
+	maxBitsForElement = (1 << k) - 1;
 
 	unsigned neededBitsToStore = n * k;
 	bucketsCount = neededBitsToStore / 8;
@@ -193,7 +210,7 @@ void MultiSet::add(unsigned num)
 	setNumber(num, count + 1);
 
 	// Calculate the bit mask to set the appropriate bit in the bucket
-	unsigned char mask = getMask(num);
+	//unsigned char mask = getMask(num);
 
 	// Set the bit in the corresponding bucket
 	//buckets[bucketIndex] |= mask;
@@ -237,3 +254,4 @@ void toggleBit(unsigned& number, unsigned index)
 
 	number = number ^ mask;
 }
+
