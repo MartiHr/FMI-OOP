@@ -82,7 +82,7 @@ unsigned MultiSet::extractNumber(unsigned number) const
 
 	for (int i = 0; i < k; i++)
 	{
-		if (checkBitValue(buckets[currentBucketIndex], 7 - currentInnerIndex))
+		if (checkBitValue(buckets[currentBucketIndex], currentInnerIndex))
 		{
 			toggleBit(extract, extractIndex);
 		}
@@ -155,6 +155,10 @@ void MultiSet::printMemoryView() const
 	}
 
 	printBucketMemoryView(bucketsCount - 1);
+}
+
+void MultiSet::serialize(const char* fileName) const
+{
 }
 
 void MultiSet::printNumberVariableTimes(unsigned number, unsigned occurences) const
