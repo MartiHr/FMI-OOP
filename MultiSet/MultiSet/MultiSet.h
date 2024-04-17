@@ -21,8 +21,8 @@ class MultiSet
 	unsigned getInnerIndex(unsigned outerIndex) const;
 	unsigned extractNumber(unsigned number) const;
 	void setNumber(unsigned number, unsigned count);
-	void printAllNumbers() const;
-	void printNumber(unsigned number, unsigned occurences) const;
+	void printNumberVariableTimes(unsigned number, unsigned occurences) const;
+	void printBucketMemoryView(unsigned index) const;
 public:
 	MultiSet(unsigned n, unsigned k);
 	MultiSet(const MultiSet& other);
@@ -31,6 +31,10 @@ public:
 
 	void add(unsigned num);
 	unsigned getNumberOccurences(unsigned number) const;
+	void printAllNumbers() const;
+	void printMemoryView() const;
+	void serialize(const char* fileName) const
+	void deserialize(const char* fileName) 
 };
 
 bool checkBitValue(unsigned number, unsigned index);

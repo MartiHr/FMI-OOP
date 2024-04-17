@@ -68,11 +68,6 @@ unsigned MultiSet::getInnerIndex(unsigned outerIndex) const
 {
 	unsigned indexInBucket = outerIndex % 8;
 
-	if (outerIndex != 0)
-	{
-		indexInBucket--;
-	}
-
 	return indexInBucket;
 }
 
@@ -145,15 +140,37 @@ void MultiSet::printAllNumbers() const
 	for (int i = 0; i < n; i++)
 	{
 		unsigned numOccurences = getNumberOccurences(i);
-		printNumber(i, numOccurences);
+		printNumberVariableTimes(i, numOccurences);
 	}
 
 	std::cout << '}';
 }
 
-void MultiSet::printNumber(unsigned number, unsigned occurences) const
+void MultiSet::printMemoryView() const
 {
+	for (int i = 0; i < bucketsCount; i++)
+	{
+		printBucketMemoryView(i);
+		std::cout << ' ';
+	}
 
+	printBucketMemoryView(bucketsCount - 1);
+}
+
+void MultiSet::printNumberVariableTimes(unsigned number, unsigned occurences) const
+{
+	for (int i = 0; i < occurences; i++)
+	{
+		std::cout << ' ' << number << ' ';
+	}
+}
+
+void MultiSet::printBucketMemoryView(unsigned index) const
+{
+	for (size_t i = 0; i < 8; i++)
+	{
+		std::cout << checkBitValue(index, 0);
+	}
 }
 
 MultiSet::MultiSet(unsigned n, unsigned k)
