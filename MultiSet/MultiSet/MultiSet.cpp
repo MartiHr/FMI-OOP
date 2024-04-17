@@ -1,5 +1,6 @@
 #include "MultiSet.h"
 #include <bitset>
+#include <fstream>
 
 void MultiSet::free()
 {
@@ -120,7 +121,7 @@ void MultiSet::setNumber(unsigned number, unsigned count)
 		{
 			setBitValue(buckets[currentBucketIndex], currentInnerIndex, 0);
 		}
-		
+
 		currentInnerIndex++;
 
 		if (currentInnerIndex > 7)
@@ -159,6 +160,47 @@ void MultiSet::printMemoryView() const
 
 void MultiSet::serialize(const char* fileName) const
 {
+	if (!fileName)
+	{
+		//TODO: handle
+	}
+
+	std::ofstream ofs(fileName, std::ios::binary);
+
+	if (!ofs.is_open())
+	{
+		//TODO: handle
+	}
+
+	ofs.write((const char*)&n, sizeof(n));
+	ofs.write((const char*)&k, sizeof(k));
+	ofs.write((const char*)&maxBitsForElement, sizeof(maxBitsForElement));
+
+	ofs.write((const char*)&bucketsCount, sizeof(bucketsCount));
+	ofs.write((const char*)&buckets, sizeof(buckets));
+}
+
+void MultiSet::deserialize(const char* fileName)
+{
+	if (!fileName)
+	{
+		// TODO: handle
+	}
+
+	std::ifstream ifs(fileName);
+
+	if (!ifs.is_open())
+	{
+		// TODO: handle
+	}
+
+	ifs.read((char*)&n, sizeof(n));
+	ifs.read((char*)&k, sizeof(k));
+	ifs.read((char*)&maxBitsForElement, sizeof(maxBitsForElement));
+
+	ifs.read((char*)&bucketsCount, sizeof(bucketsCount));
+	buckets = new uint8_t[bucketsCount];
+	ifs.read((char*)&buckets, sizeof(bucketsCount));
 }
 
 void MultiSet::printNumberVariableTimes(unsigned number, unsigned occurences) const
@@ -252,14 +294,14 @@ bool checkBitValue(unsigned number, unsigned index)
 void setBitZero(uint8_t& number, unsigned index) {
 	uint8_t mask = 1;
 	mask <<= index;
-	mask = ~mask; 
-	number =  number & mask;
+	mask = ~mask;
+	number = number & mask;
 }
 
 void setBitToOne(uint8_t& number, unsigned index) {
 	uint8_t  mask = 1;
-	mask <<= index; 
-	number =  number | mask;
+	mask <<= index;
+	number = number | mask;
 }
 
 void setBitValue(uint8_t& number, unsigned index, bool value) {
