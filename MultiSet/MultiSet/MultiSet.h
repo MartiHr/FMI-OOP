@@ -35,6 +35,10 @@ public:
 	void printMemoryView() const;
 	void serialize(const char* fileName) const;
 	void deserialize(const char* fileName);
+
+	friend MultiSet intersect(MultiSet& first, MultiSet& second);
+	friend MultiSet difference(MultiSet& first, MultiSet& second);
+	MultiSet complement() const;
 };
 
 bool checkBitValue(unsigned number, unsigned index);

@@ -1,4 +1,4 @@
-#include "MultiSet.h"
+﻿#include "MultiSet.h"
 #include <bitset>
 #include <fstream>
 
@@ -278,6 +278,67 @@ void MultiSet::add(unsigned num)
 	// Set the bit in the corresponding bucket
 	//buckets[bucketIndex] |= mask;
 }
+
+MultiSet intersect(MultiSet& first, MultiSet& second)
+{
+	// TODO: Validate CODE
+
+	unsigned minN = std::min(first.n, second.n);
+	unsigned minK = std::min(first.k, second.k);
+
+	MultiSet result(minN, minK);
+
+	for (unsigned i = 0; i < minN; ++i) 
+	{
+		unsigned count1 = first.getNumberOccurences(i);
+		unsigned count2 = second.getNumberOccurences(i);
+		unsigned intersectionCount = std::min(count1, count2);
+		result.setNumber(i, intersectionCount);
+	}
+
+	return result;
+}
+
+MultiSet difference(MultiSet& first, MultiSet& second)
+{
+	// TODO: Validate CODE
+
+	unsigned minN = std::min(first.n, second.n);
+	unsigned minK = std::min(first.k, second.k);
+
+	MultiSet result(minN, minK);
+
+	for (unsigned i = 0; i < minN; ++i)
+	{
+		unsigned count1 = first.getNumberOccurences(i);
+		unsigned count2 = second.getNumberOccurences(i);
+		if (count1 > count2)
+		{
+			result.setNumber(i, count1 - count2);
+		}
+	}
+
+	return result;
+}
+
+
+MultiSet MultiSet::complement() const
+{
+	/*Допълнение на мултимножество(ако x се е срещал p пъти,
+		то в допълнението се среща !!!!!!! 2 ^ k - 1 - p пъти !!!!!!!!!!.*/
+
+	// TODO: Validate CODE
+	MultiSet result(n, k);
+
+	for (unsigned i = 0; i < n; ++i)
+	{
+		unsigned count = getNumberOccurences(i);
+		result.setNumber(i, maxBitsForElement - count);
+	}
+
+	return result;
+}
+
 
 bool checkBitValue(unsigned number, unsigned index)
 {
