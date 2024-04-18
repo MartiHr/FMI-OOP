@@ -210,7 +210,7 @@ void MultiSet::deserialize(const char* fileName)
 
 void MultiSet::printNumberVariableTimes(unsigned number, unsigned occurrences) const
 {
-	for (int i = 0; i < occurences; i++)
+	for (int i = 0; i < occurrences; i++)
 	{
 		std::cout << ' ' << number << ' ';
 	}
@@ -275,7 +275,9 @@ void MultiSet::add(unsigned num)
 
 	// TODO: check if count of number is at max
 	unsigned upperBound = ((1 << k) - 1);
-	if (getNumberOccurrences(num) > upperBound)
+	unsigned numberOccurrences = getNumberOccurrences(num);
+
+	if (numberOccurrences >= upperBound)
 	{
 		throw "Throw a nice error";
 	}
