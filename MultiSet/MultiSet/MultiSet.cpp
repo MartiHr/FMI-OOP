@@ -149,18 +149,19 @@ void MultiSet::printAllNumbers() const
 		printNumberVariableTimes(i, numOccurences);
 	}
 
-	std::cout << '}';
+	std::cout << '}' << std::endl;
 }
 
 void MultiSet::printMemoryView() const
 {
-	for (int i = 0; i < bucketsCount; i++)
+	for (int i = 0; i < bucketsCount - 1; i++)
 	{
 		printBucketMemoryView(i);
 		std::cout << ' ';
 	}
 
 	printBucketMemoryView(bucketsCount - 1);
+	std::cout << std::endl;
 }
 
 void MultiSet::serialize(const char* fileName) const
@@ -218,9 +219,9 @@ void MultiSet::printNumberVariableTimes(unsigned number, unsigned occurrences) c
 
 void MultiSet::printBucketMemoryView(unsigned index) const
 {
-	for (size_t i = 0; i < 8; i++)
+	for (int i = 7; i >= 0; i--)
 	{
-		std::cout << checkBitValue(index, 0);
+		std::cout << checkBitValue(buckets[index], i);
 	}
 }
 
@@ -300,7 +301,7 @@ MultiSet intersect(MultiSet& first, MultiSet& second)
 
 	MultiSet result(minN, minK);
 
-	for (unsigned i = 0; i < minN; ++i) 
+	for (unsigned i = 0; i <= minN; ++i)
 	{
 		unsigned count1 = first.getNumberOccurrences(i);
 		unsigned count2 = second.getNumberOccurrences(i);
@@ -339,10 +340,10 @@ MultiSet MultiSet::complement() const
 	/*Допълнение на мултимножество(ако x се е срещал p пъти,
 		то в допълнението се среща !!!!!!! 2 ^ k - 1 - p пъти !!!!!!!!!!.*/
 
-	// TODO: Validate CODE
+		// TODO: Validate CODE
 	MultiSet result(n, k);
 
-	for (unsigned i = 0; i < n; ++i)
+	for (unsigned i = 0; i <= n; ++i)
 	{
 		unsigned count = getNumberOccurrences(i);
 		result.setNumber(i, maxOccurrencesOfElement - count);
@@ -372,7 +373,7 @@ void setBitZero(uint8_t& number, unsigned index)
 	number = number & mask;
 }
 
-void setBitToOne(uint8_t& number, unsigned index) 
+void setBitToOne(uint8_t& number, unsigned index)
 {
 	uint8_t  mask = 1;
 	mask <<= index;
