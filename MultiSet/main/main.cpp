@@ -1,5 +1,7 @@
-﻿#include <iostream>
-#include "MultiSet.h";
+﻿#pragma once
+#include <iostream>
+#include "MultiSet.h"
+
 
 int main()
 {
@@ -39,9 +41,6 @@ int main()
 	ms2.add(2);
 	ms2.add(2)*/;
 
-	std::cout << ms2.getNumberOccurrences(0) << std::endl;
-	std::cout << ms2.getNumberOccurrences(1) << std::endl;
-	std::cout << ms2.getNumberOccurrences(2) << std::endl;
 	//ms2.printAllNumbers();
 
 
@@ -77,15 +76,21 @@ int main()
 
 	// expected result { 0 0 1 2 }
 	MultiSet intersection = intersect(ms4, ms5);
-	intersection.printAllNumbers();
+	//intersection.printAllNumbers();
 
 	// expected result { 0 0 }
 	MultiSet diff1 = difference(ms4, ms5);
-	diff1.printAllNumbers();
+	//diff1.printAllNumbers();
 
 	// expected result { 0 0 0 шест единици и шест двойки }
 	MultiSet complementOfMs4 = ms4.complement();
-	complementOfMs4.printAllNumbers();
+	//complementOfMs4.printAllNumbers();
 
+	//TEST serialize and deserialize
 
+	ms2.printAllNumbers();
+	ms2.serialize("ms.bin");
+	MultiSet fromFile(0, 1);
+	fromFile.deserialize("ms.bin");
+	fromFile.printAllNumbers();
 }

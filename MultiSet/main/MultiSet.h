@@ -7,8 +7,8 @@ class MultiSet
 
 	unsigned n = 0;
 	unsigned k = 0;
-
 	unsigned maxOccurrencesOfElement = 0;
+
 	unsigned bucketsCount = 0;
 	uint8_t* buckets = nullptr;
 
@@ -42,7 +42,6 @@ public:
 };
 
 bool checkBitValue(unsigned number, unsigned index);
-
 void toggleBit(unsigned& number, unsigned index);
 void setBitZero(uint8_t& number, unsigned index);
 void setBitToOne(uint8_t& number, unsigned index);

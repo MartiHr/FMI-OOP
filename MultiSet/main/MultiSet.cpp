@@ -1,4 +1,7 @@
-﻿#include "MultiSet.h"
+﻿#pragma once
+
+#include "MultiSet.h"
+
 #include <bitset>
 #include <fstream>
 #include <exception>
@@ -183,9 +186,8 @@ void MultiSet::serialize(const char* fileName) const
 	ofs.write((const char*)&maxOccurrencesOfElement, sizeof(maxOccurrencesOfElement));
 
 	ofs.write((const char*)&bucketsCount, sizeof(bucketsCount));
-	ofs.write((const char*)&buckets, sizeof(buckets));
+	ofs.write((const char*)buckets, bucketsCount * sizeof(uint8_t)); // sizeof(uint8_t) = 1
 }
-
 void MultiSet::deserialize(const char* fileName)
 {
 	if (!fileName)
@@ -197,7 +199,7 @@ void MultiSet::deserialize(const char* fileName)
 
 	if (!ifs.is_open())
 	{
-		// TODO: handle
+		throw std::runtime_error("Failed to open file for deserialization");
 	}
 
 	ifs.read((char*)&n, sizeof(n));
@@ -205,8 +207,15 @@ void MultiSet::deserialize(const char* fileName)
 	ifs.read((char*)&maxOccurrencesOfElement, sizeof(maxOccurrencesOfElement));
 
 	ifs.read((char*)&bucketsCount, sizeof(bucketsCount));
+
+	if (buckets != nullptr)
+	{
+		delete[] buckets;
+	}
+
 	buckets = new uint8_t[bucketsCount];
-	ifs.read((char*)&buckets, sizeof(bucketsCount));
+
+	ifs.read((char*)buckets, bucketsCount * sizeof(uint8_t)); // sizeof(uint8_t) = 1
 }
 
 void MultiSet::printNumberVariableTimes(unsigned number, unsigned occurrences) const
@@ -229,6 +238,8 @@ MultiSet::MultiSet(unsigned n, unsigned k)
 {
 	this->n = n;
 	this->k = k;
+
+	// TODO: validate 1 <= k <= 8
 	// elements in bucket should be changed
 	// TODO: make sure bits for element is correct
 	maxOccurrencesOfElement = (1 << k) - 1;
