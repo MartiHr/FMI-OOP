@@ -31,9 +31,9 @@ int main()
 	ms2.add(2);
 	ms2.add(2);
 
-	std::cout << ms2.getNumberOccurences(0) << std::endl;
-	std::cout << ms2.getNumberOccurences(1) << std::endl;
-	std::cout << ms2.getNumberOccurences(2) << std::endl;
+	std::cout << ms2.getNumberOccurrences(0) << std::endl;
+	std::cout << ms2.getNumberOccurrences(1) << std::endl;
+	std::cout << ms2.getNumberOccurrences(2) << std::endl;
 
 	ms2.printAllNumbers();
 }

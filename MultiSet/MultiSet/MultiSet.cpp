@@ -1,6 +1,7 @@
 ﻿#include "MultiSet.h"
 #include <bitset>
 #include <fstream>
+#include <exception>
 
 void MultiSet::free()
 {
@@ -8,7 +9,7 @@ void MultiSet::free()
 	k = 0;
 	delete[] buckets;
 	bucketsCount = 0;
-	maxBitsForElement = 0;
+	maxOccurrencesOfElement = 0;
 	buckets = nullptr;
 }
 
@@ -25,7 +26,7 @@ void MultiSet::copyFrom(const MultiSet& other)
 	}
 
 	bucketsCount = other.bucketsCount;
-	maxBitsForElement = other.maxBitsForElement;
+	maxOccurrencesOfElement = other.maxOccurrencesOfElement;
 }
 
 unsigned MultiSet::getNumberStartIndex(unsigned number) const
@@ -58,8 +59,12 @@ unsigned char MultiSet::getMask(unsigned number) const
 	return 0;
 }
 
-unsigned MultiSet::getNumberOccurences(unsigned number) const
+unsigned MultiSet::getNumberOccurrences(unsigned number) const
 {
+	if (number > n)
+	{
+		throw std::out_of_range("Number is outside of bounds");
+	}
 	unsigned count = extractNumber(number);
 
 	return count;
@@ -138,9 +143,9 @@ void MultiSet::printAllNumbers() const
 {
 	std::cout << '{';
 
-	for (int i = 0; i < n; i++)
+	for (int i = 0; i <= n; i++)
 	{
-		unsigned numOccurences = getNumberOccurences(i);
+		unsigned numOccurences = getNumberOccurrences(i);
 		printNumberVariableTimes(i, numOccurences);
 	}
 
@@ -174,7 +179,7 @@ void MultiSet::serialize(const char* fileName) const
 
 	ofs.write((const char*)&n, sizeof(n));
 	ofs.write((const char*)&k, sizeof(k));
-	ofs.write((const char*)&maxBitsForElement, sizeof(maxBitsForElement));
+	ofs.write((const char*)&maxOccurrencesOfElement, sizeof(maxOccurrencesOfElement));
 
 	ofs.write((const char*)&bucketsCount, sizeof(bucketsCount));
 	ofs.write((const char*)&buckets, sizeof(buckets));
@@ -196,14 +201,14 @@ void MultiSet::deserialize(const char* fileName)
 
 	ifs.read((char*)&n, sizeof(n));
 	ifs.read((char*)&k, sizeof(k));
-	ifs.read((char*)&maxBitsForElement, sizeof(maxBitsForElement));
+	ifs.read((char*)&maxOccurrencesOfElement, sizeof(maxOccurrencesOfElement));
 
 	ifs.read((char*)&bucketsCount, sizeof(bucketsCount));
 	buckets = new uint8_t[bucketsCount];
 	ifs.read((char*)&buckets, sizeof(bucketsCount));
 }
 
-void MultiSet::printNumberVariableTimes(unsigned number, unsigned occurences) const
+void MultiSet::printNumberVariableTimes(unsigned number, unsigned occurrences) const
 {
 	for (int i = 0; i < occurences; i++)
 	{
@@ -225,12 +230,12 @@ MultiSet::MultiSet(unsigned n, unsigned k)
 	this->k = k;
 	// elements in bucket should be changed
 	// TODO: make sure bits for element is correct
-	maxBitsForElement = (1 << k) - 1;
+	maxOccurrencesOfElement = (1 << k) - 1;
 
-	unsigned neededBitsToStore = n * k;
+	unsigned neededBitsToStore = (n + 1) * k;
 	bucketsCount = neededBitsToStore / 8;
 
-	if (neededBitsToStore % 8 != 0 || neededBitsToStore == 0)
+	if (neededBitsToStore % 8 != 0)
 	{
 		bucketsCount++;
 	}
@@ -261,11 +266,16 @@ MultiSet::~MultiSet()
 
 void MultiSet::add(unsigned num)
 {
-	unsigned count = getNumberOccurences(num);
+	if (num > n)
+	{
+		throw std::out_of_range("Number is outside of bounds");
+	}
+
+	unsigned count = getNumberOccurrences(num);
 
 	// TODO: check if count of number is at max
 	unsigned upperBound = ((1 << k) - 1);
-	if (getNumberOccurences(num) >= upperBound)
+	if (getNumberOccurrences(num) > upperBound)
 	{
 		throw "Throw a nice error";
 	}
@@ -290,8 +300,8 @@ MultiSet intersect(MultiSet& first, MultiSet& second)
 
 	for (unsigned i = 0; i < minN; ++i) 
 	{
-		unsigned count1 = first.getNumberOccurences(i);
-		unsigned count2 = second.getNumberOccurences(i);
+		unsigned count1 = first.getNumberOccurrences(i);
+		unsigned count2 = second.getNumberOccurrences(i);
 		unsigned intersectionCount = std::min(count1, count2);
 		result.setNumber(i, intersectionCount);
 	}
@@ -310,8 +320,8 @@ MultiSet difference(MultiSet& first, MultiSet& second)
 
 	for (unsigned i = 0; i < minN; ++i)
 	{
-		unsigned count1 = first.getNumberOccurences(i);
-		unsigned count2 = second.getNumberOccurences(i);
+		unsigned count1 = first.getNumberOccurrences(i);
+		unsigned count2 = second.getNumberOccurrences(i);
 		if (count1 > count2)
 		{
 			result.setNumber(i, count1 - count2);
@@ -332,8 +342,8 @@ MultiSet MultiSet::complement() const
 
 	for (unsigned i = 0; i < n; ++i)
 	{
-		unsigned count = getNumberOccurences(i);
-		result.setNumber(i, maxBitsForElement - count);
+		unsigned count = getNumberOccurrences(i);
+		result.setNumber(i, maxOccurrencesOfElement - count);
 	}
 
 	return result;
@@ -352,20 +362,23 @@ bool checkBitValue(unsigned number, unsigned index)
 	return (mask & number) == mask;
 }
 
-void setBitZero(uint8_t& number, unsigned index) {
+void setBitZero(uint8_t& number, unsigned index)
+{
 	uint8_t mask = 1;
 	mask <<= index;
 	mask = ~mask;
 	number = number & mask;
 }
 
-void setBitToOne(uint8_t& number, unsigned index) {
+void setBitToOne(uint8_t& number, unsigned index) 
+{
 	uint8_t  mask = 1;
 	mask <<= index;
 	number = number | mask;
 }
 
-void setBitValue(uint8_t& number, unsigned index, bool value) {
+void setBitValue(uint8_t& number, unsigned index, bool value)
+{
 	return value
 		? setBitToOne(number, index)
 		: setBitZero(number, index);

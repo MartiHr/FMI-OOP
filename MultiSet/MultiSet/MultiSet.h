@@ -8,7 +8,7 @@ class MultiSet
 	unsigned n = 0;
 	unsigned k = 0;
 
-	unsigned maxBitsForElement = 0;
+	unsigned maxOccurrencesOfElement = 0;
 	unsigned bucketsCount = 0;
 	uint8_t* buckets = nullptr;
 
@@ -21,7 +21,7 @@ class MultiSet
 	unsigned getInnerIndex(unsigned outerIndex) const;
 	unsigned extractNumber(unsigned number) const;
 	void setNumber(unsigned number, unsigned count);
-	void printNumberVariableTimes(unsigned number, unsigned occurences) const;
+	void printNumberVariableTimes(unsigned number, unsigned occurrences) const;
 	void printBucketMemoryView(unsigned index) const;
 public:
 	MultiSet(unsigned n, unsigned k);
@@ -30,7 +30,7 @@ public:
 	~MultiSet();
 
 	void add(unsigned num);
-	unsigned getNumberOccurences(unsigned number) const;
+	unsigned getNumberOccurrences(unsigned number) const;
 	void printAllNumbers() const;
 	void printMemoryView() const;
 	void serialize(const char* fileName) const;
