@@ -7,10 +7,10 @@ class ModifiableIntegersFunction
 
 	// TODO: use them with a vector like class
 	// For setting a specific result for a given input
-	int16_t customResults[1000]; // Assuming input range is within [-999, 999]
+	int16_t customResults[100]; // Assuming input range is within [-999, 999]
 
 	// For excluding a point
-	bool excludedPoints[1000];
+	bool excludedPoints[100];
 
 public:
 	ModifiableIntegersFunction(int16_t(*pred)(int16_t number));
