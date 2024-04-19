@@ -137,11 +137,108 @@ ModifiableIntegersFunction ModifiableIntegersFunction::operator()(const Modifiab
 		int16_t setIndex = innerRes + (-INT16_MIN);
 		result.valueByPoint[i].value = this->valueByPoint[setIndex].value;
 	}
+
+	return result;
 }
 
 bool operator>(const ModifiableIntegersFunction& lhs, const ModifiableIntegersFunction& rhs)
 {
-	return false;
+	for (int i = 0; i < constants::INTERVAL_SIZE; i++)
+	{
+		int16_t lhsValue = lhs.valueByPoint[i].value;
+		int16_t rhsValue = rhs.valueByPoint[i].value;
+
+		if (lhs.valueByPoint[i].isExcluded)
+		{
+			lhsValue = INT16_MIN;
+		}
+
+		if (rhs.valueByPoint[i].isExcluded)
+		{
+			rhsValue = INT16_MIN;
+		}
+
+		if (lhsValue <= rhsValue)
+		{
+			return false;
+		}
+	}
+
+	return true;
+}
+
+bool operator<(const ModifiableIntegersFunction& lhs, const ModifiableIntegersFunction& rhs)
+{
+	for (int i = 0; i < constants::INTERVAL_SIZE; i++)
+	{
+		int16_t lhsValue = lhs.valueByPoint[i].value;
+		int16_t rhsValue = rhs.valueByPoint[i].value;
+
+		if (lhs.valueByPoint[i].isExcluded)
+		{
+			lhsValue = INT16_MIN;
+		}
+
+		if (rhs.valueByPoint[i].isExcluded)
+		{
+			rhsValue = INT16_MIN;
+		}
+
+		if (lhsValue >= rhsValue)
+		{
+			return false;
+		}
+	}
+
+	return true;
+}
+
+bool operator==(const ModifiableIntegersFunction& lhs, const ModifiableIntegersFunction& rhs)
+{
+	for (int i = 0; i < constants::INTERVAL_SIZE; i++)
+	{
+		int16_t lhsValue = lhs.valueByPoint[i].value;
+		int16_t rhsValue = rhs.valueByPoint[i].value;
+
+		if (lhs.valueByPoint[i].isExcluded)
+		{
+			lhsValue = INT16_MIN;
+		}
+
+		if (rhs.valueByPoint[i].isExcluded)
+		{
+			rhsValue = INT16_MIN;
+		}
+
+		if (lhsValue != rhsValue)
+		{
+			return false;
+		}
+	}
+
+	return true;
+}
+
+bool operator||(const ModifiableIntegersFunction& lhs, const ModifiableIntegersFunction& rhs)
+{
+	int16_t prevDiff = lhs.valueByPoint[0].value - rhs.valueByPoint[0].value;
+
+	for (int i = 1; i < constants::INTERVAL_SIZE; i++)
+	{
+		int16_t newDiff = lhs.valueByPoint[i].value - rhs.valueByPoint[i].value;
+
+		if (prevDiff != newDiff)
+		{
+			return false;
+		}
+	}
+
+	return true;
+}
+
+bool operator^(const ModifiableIntegersFunction& func, int16_t k)
+{
+
 }
 
 ModifiableIntegersFunction operator+(const ModifiableIntegersFunction& lhs, const ModifiableIntegersFunction& rhs)
