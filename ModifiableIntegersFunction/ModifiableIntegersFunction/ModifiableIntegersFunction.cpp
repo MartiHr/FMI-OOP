@@ -127,17 +127,15 @@ ModifiableIntegersFunction ModifiableIntegersFunction::operator()(const Modifiab
 
 	for (int i = 0; i < constants::INTERVAL_SIZE; i++)
 	{
-		//int index = i + INT16_MIN;
-
 		if (inner.valueByPoint[i].isExcluded)
 		{
 			result.valueByPoint[i].isExcluded = true;
 			continue;
 		}
-
+		
 		int16_t innerRes = inner.valueByPoint[i].value;
-		int16_t setIndex = innerRes;
-		result.valueByPoint[i].value = this->valueByPoint[innerRes].value;
+		int16_t setIndex = innerRes + (-INT16_MIN);
+		result.valueByPoint[i].value = this->valueByPoint[setIndex].value;
 	}
 }
 
