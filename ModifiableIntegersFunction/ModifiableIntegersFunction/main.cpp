@@ -9,6 +9,7 @@ int16_t cube(int16_t number)
 
 int main()
 {
+	std::cout << INT16_MAX * 2 + 2 << std::endl;
 	ModifiableIntegersFunction mif(&cube);
 	std::cout << mif(1) << std::endl;
 	mif.excludePoint(2);
