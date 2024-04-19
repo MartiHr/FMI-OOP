@@ -36,7 +36,9 @@ public:
 	ModifiableIntegersFunction& operator-=(const ModifiableIntegersFunction& other);
 	ModifiableIntegersFunction operator()(const ModifiableIntegersFunction& inner);
 
-
+	friend bool operator>(const ModifiableIntegersFunction& lhs, const ModifiableIntegersFunction& rhs);
+	friend bool operator<(const ModifiableIntegersFunction& lhs, const ModifiableIntegersFunction& rhs);
+	friend bool operator==(const ModifiableIntegersFunction& lhs, const ModifiableIntegersFunction& rhs);
 };
 
 ModifiableIntegersFunction operator+(const ModifiableIntegersFunction& lhs, const ModifiableIntegersFunction& rhs);

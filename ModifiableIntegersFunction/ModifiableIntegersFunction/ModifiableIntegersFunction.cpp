@@ -14,11 +14,11 @@ void ModifiableIntegersFunction::copyFrom(const ModifiableIntegersFunction& othe
 		int currentIndex = i + INT16_MIN;
 
 		// possibli on one line
-		//valueByPoint[currentIndex] = other.valueByPoint[currentIndex];
+		//valueByPoint[i] = other.valueByPoint[i];
 
-		valueByPoint[currentIndex].key = other.valueByPoint[currentIndex].key;
-		valueByPoint[currentIndex].value = other.valueByPoint[currentIndex].value;
-		valueByPoint[currentIndex].isExcluded = other.valueByPoint[currentIndex].isExcluded;
+		valueByPoint[i].key = other.valueByPoint[i].key;
+		valueByPoint[i].value = other.valueByPoint[i].value;
+		valueByPoint[i].isExcluded = other.valueByPoint[i].isExcluded;
 	}
 }
 
@@ -93,15 +93,13 @@ ModifiableIntegersFunction& ModifiableIntegersFunction::operator+=(const Modifia
 {
     for (int i = 0; i < constants::INTERVAL_SIZE; i++)
     {
-        int index = i + INT16_MIN;
-
-		if (other.valueByPoint[index].isExcluded)
+		if (other.valueByPoint[i].isExcluded)
 		{
-			valueByPoint[index].isExcluded = true;
+			valueByPoint[i].isExcluded = true;
 			continue;
 		}
 
-        valueByPoint[index].value += other.valueByPoint[index].value;
+        valueByPoint[i].value += other.valueByPoint[i].value;
     }
 
     return *this; // Return by reference to the modified object
@@ -111,15 +109,13 @@ ModifiableIntegersFunction& ModifiableIntegersFunction::operator-=(const Modifia
 {
     for (int i = 0; i < constants::INTERVAL_SIZE; i++)
     {
-        int index = i + INT16_MIN;
-		
-		if (other.valueByPoint[index].isExcluded)
+		if (other.valueByPoint[i].isExcluded)
 		{
-			valueByPoint[index].isExcluded = true;
+			valueByPoint[i].isExcluded = true;
 			continue;
 		}
 
-        valueByPoint[index].value -= other.valueByPoint[index].value; // Perform subtraction
+        valueByPoint[i].value -= other.valueByPoint[i].value; // Perform subtraction
     }
 
     return *this; // Return by reference to the modified object
@@ -131,17 +127,23 @@ ModifiableIntegersFunction ModifiableIntegersFunction::operator()(const Modifiab
 
 	for (int i = 0; i < constants::INTERVAL_SIZE; i++)
 	{
-		int index = i + INT16_MIN;
+		//int index = i + INT16_MIN;
 
-		if (inner.valueByPoint[index].isExcluded || valueByPoint[index].isExcluded)
+		if (inner.valueByPoint[i].isExcluded)
 		{
-			result.valueByPoint[index].isExcluded = true;
+			result.valueByPoint[i].isExcluded = true;
 			continue;
 		}
 
-		int16_t innerRes = inner.valueByPoint[index].value;
-		result.valueByPoint[index].value = this->valueByPoint[innerRes].value;
+		int16_t innerRes = inner.valueByPoint[i].value;
+		int16_t setIndex = innerRes;
+		result.valueByPoint[i].value = this->valueByPoint[innerRes].value;
 	}
+}
+
+bool operator>(const ModifiableIntegersFunction& lhs, const ModifiableIntegersFunction& rhs)
+{
+	return false;
 }
 
 ModifiableIntegersFunction operator+(const ModifiableIntegersFunction& lhs, const ModifiableIntegersFunction& rhs)
