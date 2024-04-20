@@ -42,6 +42,19 @@ bool ModifiableIntegersFunction::isDefined()
 	return true;
 }
 
+void ModifiableIntegersFunction::printFirst50() const
+{
+	for (size_t i = 0; i < 5; i++)
+	{
+		std::cout << valueByPoint[i].key << "->" << valueByPoint[i].value << ' ';
+	}
+
+	for (size_t i = (-INT16_MIN); i < 5 + (-INT16_MIN); i++)
+	{
+		std::cout << valueByPoint[i].key << "->" << valueByPoint[i].value << ' ';
+	}
+}
+
 ModifiableIntegersFunction::ModifiableIntegersFunction()
 {
 	function = nullptr;
@@ -55,7 +68,7 @@ ModifiableIntegersFunction::ModifiableIntegersFunction(int16_t(*pred)(int16_t nu
 	for (int i = 0; i < constants::INTERVAL_SIZE; ++i)
 	{
 		valueByPoint[i].key = i + INT16_MIN;
-		valueByPoint[i].value = function(i);
+		valueByPoint[i].value = function(valueByPoint[i].key);
 	}
 }
 
@@ -148,8 +161,8 @@ ModifiableIntegersFunction ModifiableIntegersFunction::operator()(const Modifiab
 		}
 
 		int16_t innerRes = inner.valueByPoint[i].value;
-		int16_t setIndex = innerRes + (-INT16_MIN);
-		result.valueByPoint[i].value = this->valueByPoint[setIndex].value;
+		int setIndex = innerRes + (-INT16_MIN);
+		result.valueByPoint[i].value = valueByPoint[setIndex].value;
 	}
 
 	return result;
@@ -167,7 +180,7 @@ bool ModifiableIntegersFunction::checkForInjection()
 		}
 
 		int16_t currentValue = valueByPoint[i].value;
-		int16_t setIndex = currentValue + (-INT16_MIN);
+		int setIndex = currentValue - INT16_MIN;
 
 		// Check if value is already contained
 		if (encounteredValues[setIndex] == true)
@@ -176,7 +189,7 @@ bool ModifiableIntegersFunction::checkForInjection()
 			return false;
 		}
 
-		encounteredValues[setIndex] == true;
+		encounteredValues[setIndex] = true;
 	}
 
 	delete[] encounteredValues;
@@ -197,7 +210,7 @@ bool ModifiableIntegersFunction::checkForSurjection()
 		}
 
 		int16_t currentValue = valueByPoint[i].value;
-		int16_t setIndex = currentValue + (-INT16_MIN);
+		int setIndex = currentValue + (-INT16_MIN);
 
 		foundValues[setIndex] = true;
 	}
@@ -256,16 +269,21 @@ void ModifiableIntegersFunction::deserialize(const char* fileName)
 
 void ModifiableIntegersFunction::printFunctionInPlane(int16_t x1, int16_t x2, int16_t y1, int16_t y2) const
 {
-	/*if (x2 - x1 != 20 || y2 - y1 != 20)
+	if (x2 - x1 != 20 || y2 - y1 != 20)
 	{
 		throw std::invalid_argument("The diffrences: x2 - x1 should be equal to 20 and y2 - y1 should be equal to 20.");
-	}*/
+	}
 
 	for (int y = y2; y >= y1; y--)
 	{
 		for (int x = x1; x < x2; x++)
 		{
-			if (x == 0 && y != 0)
+			if (valueByPoint[x + (-INT16_MIN)].isExcluded == false
+				&& valueByPoint[x + (-INT16_MIN)].value == y)
+			{
+				std::cout << 'O';
+			}
+			else if (x == 0 && y != 0)
 			{
 				std::cout << '|';
 			}
@@ -276,11 +294,6 @@ void ModifiableIntegersFunction::printFunctionInPlane(int16_t x1, int16_t x2, in
 			else if (x == 0 && y == 0)
 			{
 				std::cout << '|';
-			}
-			else if (valueByPoint[x + (-INT16_MIN)].isExcluded == false
-				&& valueByPoint[x + (-INT16_MIN)].value == y)
-			{
-				std::cout << '.';
 			}
 			else
 			{

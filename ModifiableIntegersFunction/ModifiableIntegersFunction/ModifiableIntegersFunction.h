@@ -21,7 +21,6 @@ class ModifiableIntegersFunction
 	void copyFrom(const ModifiableIntegersFunction& other);
 	void free();
 	bool isDefined();
-	void 
 public:
 	ModifiableIntegersFunction();
 	ModifiableIntegersFunction(int16_t(*pred)(int16_t number));
@@ -45,6 +44,7 @@ public:
 	void deserialize(const char* fileName);
 
 	void printFunctionInPlane(int16_t x1, int16_t x2, int16_t y1, int16_t y2) const;
+	void printFirst50() const;
 
 	friend bool operator>(const ModifiableIntegersFunction& lhs, const ModifiableIntegersFunction& rhs);
 	friend bool operator<(const ModifiableIntegersFunction& lhs, const ModifiableIntegersFunction& rhs);

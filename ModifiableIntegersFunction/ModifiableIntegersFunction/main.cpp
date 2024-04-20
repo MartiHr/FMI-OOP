@@ -2,9 +2,14 @@
 #include <iostream>
 #include "ModifiableIntegersFunction.h"
 
+int16_t xEqualY(int16_t number)
+{
+	return number * number * number - 3 * number;
+}
+
 int16_t cube(int16_t number)
 {
-	return number;
+	return number * number;
 }
 
 int main()
@@ -33,6 +38,22 @@ int main()
 		std::cout << e.what() << std::endl;
 	}*/
 
-	ModifiableIntegersFunction mif(&cube);
-	mif.printFunctionInPlane(-50, 50, -50, 50);
+	ModifiableIntegersFunction mif1(&xEqualY);
+	ModifiableIntegersFunction mif2(&cube);
+
+	std::cout << mif1.checkForInjection();
+	std::cout << mif1.checkForSurjection();
+	std::cout << mif1.checkForBijection();
+
+	//mif.printFirst50();
+	/*try
+	{
+		mif1.printFunctionInPlane(-10, 10, -10, 10);
+		mif1.printFunctionInPlane(-10, 10, -11, 10);
+
+	}
+	catch (const std::exception& e)
+	{
+		std::cout << e.what();
+	}*/
 }
