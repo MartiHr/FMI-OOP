@@ -1,6 +1,7 @@
 ﻿#pragma once
 
 #include "MultiSet.h"
+#include "Constants.h"
 
 #include <bitset>
 #include <fstream>
@@ -66,8 +67,9 @@ unsigned MultiSet::getNumberOccurrences(unsigned number) const
 {
 	if (number > n)
 	{
-		throw std::out_of_range("Number is outside of bounds");
+		throw std::out_of_range(Constants::INVALID_BOUNDARY);
 	}
+
 	unsigned count = extractNumber(number);
 
 	return count;
@@ -171,14 +173,14 @@ void MultiSet::serialize(const char* fileName) const
 {
 	if (!fileName)
 	{
-		//TODO: handle
+		throw std::invalid_argument(Constants::NULL_FILENAME);
 	}
 
 	std::ofstream ofs(fileName, std::ios::binary);
 
 	if (!ofs.is_open())
 	{
-		//TODO: handle
+		throw std::runtime_error(Constants::FAILED_OPEN_FILE);
 	}
 
 	ofs.write((const char*)&n, sizeof(n));
@@ -192,14 +194,14 @@ void MultiSet::deserialize(const char* fileName)
 {
 	if (!fileName)
 	{
-		// TODO: handle
+		throw std::invalid_argument(Constants::NULL_FILENAME);
 	}
 
 	std::ifstream ifs(fileName);
 
 	if (!ifs.is_open())
 	{
-		throw std::runtime_error("Failed to open file for deserialization");
+		throw std::runtime_error(Constants::FAILED_OPEN_FILE);
 	}
 
 	ifs.read((char*)&n, sizeof(n));
@@ -239,9 +241,11 @@ MultiSet::MultiSet(unsigned n, unsigned k)
 	this->n = n;
 	this->k = k;
 
-	// TODO: validate 1 <= k <= 8
-	// elements in bucket should be changed
-	// TODO: make sure bits for element is correct
+	if (k < 1 || k > 8)
+	{
+		throw std::invalid_argument(Constants::INVALID_ARGUMENT);
+	}
+
 	maxOccurrencesOfElement = (1 << k) - 1;
 
 	unsigned neededBitsToStore = (n + 1) * k;
@@ -280,33 +284,24 @@ void MultiSet::add(unsigned num)
 {
 	if (num > n)
 	{
-		throw std::out_of_range("Number is outside of bounds");
+		throw std::out_of_range(Constants::OUT_OF_BOUNDS);
 	}
 
 	unsigned count = getNumberOccurrences(num);
 
-	// TODO: check if count of number is at max
 	unsigned upperBound = ((1 << k) - 1);
 	unsigned numberOccurrences = getNumberOccurrences(num);
 
 	if (numberOccurrences >= upperBound)
 	{
-		throw "Throw a nice error";
+		throw std::range_error(Constants::INVALID_BOUNDARY);
 	}
 
 	setNumber(num, count + 1);
-
-	// Calculate the bit mask to set the appropriate bit in the bucket
-	//unsigned char mask = getMask(num);
-
-	// Set the bit in the corresponding bucket
-	//buckets[bucketIndex] |= mask;
 }
 
 MultiSet intersect(MultiSet& first, MultiSet& second)
 {
-	// TODO: Validate CODE
-
 	unsigned minN = std::min(first.n, second.n);
 	unsigned minK = std::min(first.k, second.k);
 
@@ -325,8 +320,6 @@ MultiSet intersect(MultiSet& first, MultiSet& second)
 
 MultiSet difference(MultiSet& first, MultiSet& second)
 {
-	// TODO: Validate CODE
-
 	unsigned minN = std::min(first.n, second.n);
 	unsigned minK = std::min(first.k, second.k);
 
@@ -348,10 +341,6 @@ MultiSet difference(MultiSet& first, MultiSet& second)
 
 MultiSet MultiSet::complement() const
 {
-	/*Допълнение на мултимножество(ако x се е срещал p пъти,
-		то в допълнението се среща !!!!!!! 2 ^ k - 1 - p пъти !!!!!!!!!!.*/
-
-		// TODO: Validate CODE
 	MultiSet result(n, k);
 
 	for (unsigned i = 0; i <= n; ++i)
