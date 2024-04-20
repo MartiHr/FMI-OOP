@@ -8,9 +8,9 @@
 void ModifiableIntegersFunction::copyFrom(const ModifiableIntegersFunction& other)
 {
 	function = other.function;
-	valueByPoint = new KeyValue[constants::INTERVAL_SIZE];
+	valueByPoint = new KeyValue[Constants::INTERVAL_SIZE];
 
-	for (int i = 0; i < constants::INTERVAL_SIZE; i++)
+	for (int i = 0; i < Constants::INTERVAL_SIZE; i++)
 	{
 		valueByPoint[i].key = other.valueByPoint[i].key;
 		valueByPoint[i].value = other.valueByPoint[i].value;
@@ -26,7 +26,7 @@ void ModifiableIntegersFunction::free()
 
 bool ModifiableIntegersFunction::isDefined()
 {
-	for (size_t i = 0; i < constants::INTERVAL_SIZE; i++)
+	for (size_t i = 0; i < Constants::INTERVAL_SIZE; i++)
 	{
 		if (valueByPoint[i].isExcluded)
 		{
@@ -53,14 +53,14 @@ void ModifiableIntegersFunction::printFirst50() const
 ModifiableIntegersFunction::ModifiableIntegersFunction()
 {
 	function = nullptr;
-	valueByPoint = new KeyValue[constants::INTERVAL_SIZE];
+	valueByPoint = new KeyValue[Constants::INTERVAL_SIZE];
 }
 
 ModifiableIntegersFunction::ModifiableIntegersFunction(int16_t(*pred)(int16_t number)) : function(pred)
 {
-	valueByPoint = new KeyValue[constants::INTERVAL_SIZE];
+	valueByPoint = new KeyValue[Constants::INTERVAL_SIZE];
 
-	for (int i = 0; i < constants::INTERVAL_SIZE; ++i)
+	for (int i = 0; i < Constants::INTERVAL_SIZE; ++i)
 	{
 		valueByPoint[i].key = i + INT16_MIN;
 		valueByPoint[i].value = function(valueByPoint[i].key);
@@ -105,7 +105,7 @@ int16_t ModifiableIntegersFunction::operator()(int16_t input) const
 
 	if (isExcluded)
 	{
-		throw std::invalid_argument(constants::EXCLUDED_POINT);
+		throw std::invalid_argument(Constants::EXCLUDED_POINT);
 	}
 
 	int16_t result = valueByPoint[input + -(INT16_MIN)].value;
@@ -114,7 +114,7 @@ int16_t ModifiableIntegersFunction::operator()(int16_t input) const
 
 ModifiableIntegersFunction& ModifiableIntegersFunction::operator+=(const ModifiableIntegersFunction& other)
 {
-	for (int i = 0; i < constants::INTERVAL_SIZE; i++)
+	for (int i = 0; i < Constants::INTERVAL_SIZE; i++)
 	{
 		if (other.valueByPoint[i].isExcluded)
 		{
@@ -130,7 +130,7 @@ ModifiableIntegersFunction& ModifiableIntegersFunction::operator+=(const Modifia
 
 ModifiableIntegersFunction& ModifiableIntegersFunction::operator-=(const ModifiableIntegersFunction& other)
 {
-	for (int i = 0; i < constants::INTERVAL_SIZE; i++)
+	for (int i = 0; i < Constants::INTERVAL_SIZE; i++)
 	{
 		if (other.valueByPoint[i].isExcluded)
 		{
@@ -148,7 +148,7 @@ ModifiableIntegersFunction ModifiableIntegersFunction::operator()(const Modifiab
 {
 	ModifiableIntegersFunction result(*this);
 
-	for (int i = 0; i < constants::INTERVAL_SIZE; i++)
+	for (int i = 0; i < Constants::INTERVAL_SIZE; i++)
 	{
 		if (inner.valueByPoint[i].isExcluded)
 		{
@@ -166,9 +166,9 @@ ModifiableIntegersFunction ModifiableIntegersFunction::operator()(const Modifiab
 
 bool ModifiableIntegersFunction::checkForInjection()
 {
-	bool* encounteredValues = new bool[constants::INTERVAL_SIZE] { false };
+	bool* encounteredValues = new bool[Constants::INTERVAL_SIZE] { false };
 
-	for (int i = 0; i < constants::INTERVAL_SIZE; i++)
+	for (int i = 0; i < Constants::INTERVAL_SIZE; i++)
 	{
 		if (valueByPoint[i].isExcluded)
 		{
@@ -195,9 +195,9 @@ bool ModifiableIntegersFunction::checkForInjection()
 bool ModifiableIntegersFunction::checkForSurjection()
 {
 	// Check if every value has a key
-	bool* foundValues = new bool[constants::INTERVAL_SIZE] { false };
+	bool* foundValues = new bool[Constants::INTERVAL_SIZE] { false };
 
-	for (int i = 0; i < constants::INTERVAL_SIZE; i++)
+	for (int i = 0; i < Constants::INTERVAL_SIZE; i++)
 	{
 		if (valueByPoint[i].isExcluded)
 		{
@@ -211,7 +211,7 @@ bool ModifiableIntegersFunction::checkForSurjection()
 		foundValues[setIndex] = true;
 	}
 
-	for (int i = 0; i < constants::INTERVAL_SIZE; i++)
+	for (int i = 0; i < Constants::INTERVAL_SIZE; i++)
 	{
 		if (foundValues[i] == false)
 		{
@@ -233,41 +233,41 @@ void ModifiableIntegersFunction::serialize(const char* fileName) const
 {
 	if (!fileName)
 	{
-		throw std::invalid_argument(constants::NULL_FILENAME);
+		throw std::invalid_argument(Constants::NULL_FILENAME);
 	}
 
 	std::ofstream ofs(fileName, std::ios::binary);
 
 	if (!ofs.is_open())
 	{
-		throw std::runtime_error(constants::FAILED_TO_OPEN);
+		throw std::runtime_error(Constants::FAILED_TO_OPEN);
 	}
 
-	ofs.write((const char*)valueByPoint, constants::INTERVAL_SIZE * sizeof(KeyValue));
+	ofs.write((const char*)valueByPoint, Constants::INTERVAL_SIZE * sizeof(KeyValue));
 }
 
 void ModifiableIntegersFunction::deserialize(const char* fileName)
 {
 	if (!fileName)
 	{
-		throw std::invalid_argument(constants::NULL_FILENAME);
+		throw std::invalid_argument(Constants::NULL_FILENAME);
 	}
 
 	std::ifstream ifs(fileName, std::ios::binary);
 
 	if (!ifs.is_open())
 	{
-		throw std::runtime_error(constants::FAILED_TO_OPEN);
+		throw std::runtime_error(Constants::FAILED_TO_OPEN);
 	}
 
-	ifs.read((char*)valueByPoint, constants::INTERVAL_SIZE * sizeof(KeyValue));
+	ifs.read((char*)valueByPoint, Constants::INTERVAL_SIZE * sizeof(KeyValue));
 }
 
 void ModifiableIntegersFunction::printFunctionInPlane(int16_t x1, int16_t x2, int16_t y1, int16_t y2) const
 {
 	if (x2 - x1 != 20 || y2 - y1 != 20)
 	{
-		throw std::invalid_argument(constants::INVALID_DIFFERENCE);
+		throw std::invalid_argument(Constants::INVALID_DIFFERENCE);
 	}
 
 	for (int y = y2; y >= y1; y--)
@@ -303,7 +303,7 @@ void ModifiableIntegersFunction::printFunctionInPlane(int16_t x1, int16_t x2, in
 
 bool operator>(const ModifiableIntegersFunction& lhs, const ModifiableIntegersFunction& rhs)
 {
-	for (int i = 0; i < constants::INTERVAL_SIZE; i++)
+	for (int i = 0; i < Constants::INTERVAL_SIZE; i++)
 	{
 		int16_t lhsValue = lhs.valueByPoint[i].value;
 		int16_t rhsValue = rhs.valueByPoint[i].value;
@@ -329,7 +329,7 @@ bool operator>(const ModifiableIntegersFunction& lhs, const ModifiableIntegersFu
 
 bool operator<(const ModifiableIntegersFunction& lhs, const ModifiableIntegersFunction& rhs)
 {
-	for (int i = 0; i < constants::INTERVAL_SIZE; i++)
+	for (int i = 0; i < Constants::INTERVAL_SIZE; i++)
 	{
 		int16_t lhsValue = lhs.valueByPoint[i].value;
 		int16_t rhsValue = rhs.valueByPoint[i].value;
@@ -355,7 +355,7 @@ bool operator<(const ModifiableIntegersFunction& lhs, const ModifiableIntegersFu
 
 bool operator==(const ModifiableIntegersFunction& lhs, const ModifiableIntegersFunction& rhs)
 {
-	for (int i = 0; i < constants::INTERVAL_SIZE; i++)
+	for (int i = 0; i < Constants::INTERVAL_SIZE; i++)
 	{
 		int16_t lhsValue = lhs.valueByPoint[i].value;
 		int16_t rhsValue = rhs.valueByPoint[i].value;
@@ -391,7 +391,7 @@ bool operator||(const ModifiableIntegersFunction& lhs, const ModifiableIntegersF
 	// a simple check for line would be sufficient.
 	int16_t prevDiff = lhs.valueByPoint[0].value - rhs.valueByPoint[0].value;
 
-	for (int i = 1; i < constants::INTERVAL_SIZE; i++)
+	for (int i = 1; i < Constants::INTERVAL_SIZE; i++)
 	{
 		int16_t newDiff = lhs.valueByPoint[i].value - rhs.valueByPoint[i].value;
 
@@ -408,7 +408,10 @@ ModifiableIntegersFunction operator^(const ModifiableIntegersFunction& func, int
 {
 	ModifiableIntegersFunction result(func);
 
-	// TODO: validate k
+	if (k <= 0)
+	{
+		throw std::invalid_argument(Constants::INVALID_ARGUMENT);
+	}
 
 	for (size_t i = 0; i < k - 1; i++)
 	{
@@ -424,10 +427,10 @@ ModifiableIntegersFunction operator!(const ModifiableIntegersFunction& func)
 
 	if (!result.checkForBijection())
 	{
-		throw std::invalid_argument(constants::INVALID_BIJECTION);
+		throw std::invalid_argument(Constants::INVALID_BIJECTION);
 	}
 
-	for (int i = 0; i < constants::INTERVAL_SIZE; i++)
+	for (int i = 0; i < Constants::INTERVAL_SIZE; i++)
 	{
 		result.valueByPoint[i].key = func.valueByPoint[i].value;
 		result.valueByPoint[i].value = func.valueByPoint[i].key;
