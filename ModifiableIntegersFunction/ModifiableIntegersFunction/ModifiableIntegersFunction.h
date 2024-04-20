@@ -8,8 +8,6 @@ struct KeyValue
 	int16_t value = 0;
 
 	bool isExcluded = false;
-	//bool hasCustomValue = false;
-
 };
 
 class ModifiableIntegersFunction

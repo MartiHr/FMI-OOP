@@ -12,11 +12,6 @@ void ModifiableIntegersFunction::copyFrom(const ModifiableIntegersFunction& othe
 
 	for (int i = 0; i < constants::INTERVAL_SIZE; i++)
 	{
-		int currentIndex = i + INT16_MIN;
-
-		// possibli on one line
-		//valueByPoint[i] = other.valueByPoint[i];
-
 		valueByPoint[i].key = other.valueByPoint[i].key;
 		valueByPoint[i].value = other.valueByPoint[i].value;
 		valueByPoint[i].isExcluded = other.valueByPoint[i].isExcluded;
@@ -44,14 +39,14 @@ bool ModifiableIntegersFunction::isDefined()
 
 void ModifiableIntegersFunction::printFirst50() const
 {
-	for (size_t i = 0; i < 5; i++)
+	/*for (size_t i = 0; i < 5; i++)
 	{
 		std::cout << valueByPoint[i].key << "->" << valueByPoint[i].value << ' ';
-	}
+	}*/
 
 	for (size_t i = (-INT16_MIN); i < 5 + (-INT16_MIN); i++)
 	{
-		std::cout << valueByPoint[i].key << "->" << valueByPoint[i].value << ' ';
+		std::cout << valueByPoint[i].key << ":" << valueByPoint[i].value << ' ';
 	}
 }
 
@@ -110,10 +105,11 @@ int16_t ModifiableIntegersFunction::operator()(int16_t input) const
 
 	if (isExcluded)
 	{
-		throw std::invalid_argument("This point is excluded");
+		throw std::invalid_argument(constants::EXCLUDED_POINT);
 	}
 
-	return valueByPoint[input].value;
+	int16_t result = valueByPoint[input + -(INT16_MIN)].value;
+	return result;
 }
 
 ModifiableIntegersFunction& ModifiableIntegersFunction::operator+=(const ModifiableIntegersFunction& other)
@@ -237,14 +233,14 @@ void ModifiableIntegersFunction::serialize(const char* fileName) const
 {
 	if (!fileName)
 	{
-		//TODO: handle
+		throw std::invalid_argument(constants::NULL_FILENAME);
 	}
 
 	std::ofstream ofs(fileName, std::ios::binary);
 
 	if (!ofs.is_open())
 	{
-		//TODO: handle
+		throw std::runtime_error(constants::FAILED_TO_OPEN);
 	}
 
 	ofs.write((const char*)valueByPoint, constants::INTERVAL_SIZE * sizeof(KeyValue));
@@ -254,14 +250,14 @@ void ModifiableIntegersFunction::deserialize(const char* fileName)
 {
 	if (!fileName)
 	{
-		//TODO: handle
+		throw std::invalid_argument(constants::NULL_FILENAME);
 	}
 
 	std::ifstream ifs(fileName, std::ios::binary);
 
 	if (!ifs.is_open())
 	{
-		//TODO: handle
+		throw std::runtime_error(constants::FAILED_TO_OPEN);
 	}
 
 	ifs.read((char*)valueByPoint, constants::INTERVAL_SIZE * sizeof(KeyValue));
@@ -271,7 +267,7 @@ void ModifiableIntegersFunction::printFunctionInPlane(int16_t x1, int16_t x2, in
 {
 	if (x2 - x1 != 20 || y2 - y1 != 20)
 	{
-		throw std::invalid_argument("The diffrences: x2 - x1 should be equal to 20 and y2 - y1 should be equal to 20.");
+		throw std::invalid_argument(constants::INVALID_DIFFERENCE);
 	}
 
 	for (int y = y2; y >= y1; y--)
@@ -390,7 +386,9 @@ bool operator!=(const ModifiableIntegersFunction& lhs, const ModifiableIntegersF
 
 bool operator||(const ModifiableIntegersFunction& lhs, const ModifiableIntegersFunction& rhs)
 {
-	// check for line
+	// If the function are not lines it would show 
+	// the function is offset. If somebody thinks it is unwanted behaviour
+	// a simple check for line would be sufficient.
 	int16_t prevDiff = lhs.valueByPoint[0].value - rhs.valueByPoint[0].value;
 
 	for (int i = 1; i < constants::INTERVAL_SIZE; i++)
@@ -410,7 +408,8 @@ ModifiableIntegersFunction operator^(const ModifiableIntegersFunction& func, int
 {
 	ModifiableIntegersFunction result(func);
 
-	// TODO: check for how many times
+	// TODO: validate k
+
 	for (size_t i = 0; i < k - 1; i++)
 	{
 		result = result(result);
@@ -425,7 +424,7 @@ ModifiableIntegersFunction operator!(const ModifiableIntegersFunction& func)
 
 	if (!result.checkForBijection())
 	{
-		throw std::invalid_argument("The function is not bijective (injective and surjective)");
+		throw std::invalid_argument(constants::INVALID_BIJECTION);
 	}
 
 	for (int i = 0; i < constants::INTERVAL_SIZE; i++)

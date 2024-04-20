@@ -4,12 +4,17 @@
 
 int16_t xEqualY(int16_t number)
 {
-	return number * number * number - 3 * number;
+	return number;
 }
 
 int16_t cube(int16_t number)
 {
 	return number * number;
+}
+
+int16_t xEqualYPlus1(int16_t number)
+{
+	return number + 1;
 }
 
 int main()
@@ -38,17 +43,87 @@ int main()
 		std::cout << e.what() << std::endl;
 	}*/
 
-	ModifiableIntegersFunction mif1(&xEqualY);
+	/*ModifiableIntegersFunction mif1(&xEqualY);
 	ModifiableIntegersFunction mif2(&cube);
+	ModifiableIntegersFunction mif3(&xEqualYPlus1);
 
-	std::cout << mif1.checkForInjection();
-	std::cout << mif1.checkForSurjection();
-	std::cout << mif1.checkForBijection();
+	ModifiableIntegersFunction mif4 = mif1 + mif1;
+	ModifiableIntegersFunction mif5 = mif1 - mif1;
+	mif1.printFirst50();
+	std::cout << std::endl;
+	mif4.printFirst50();
+	std::cout << std::endl;
+	mif5.printFirst50();*/
 
-	//mif.printFirst50();
+	//Custom result
+	/*mif1.setCustomResult(1, 2);
+	std::cout << mif1(1) << std::endl;*/
+
+	// Exclude point
+	/*std::cout << mif1(1) << std::endl;
+
+	mif1.excludePoint(1);
+	try
+	{
+		mif1(1);
+	}
+	catch (const std::exception& e)
+	{
+		std::cout << e.what() << std::endl;
+	}*/
+
+	// Composition
 	/*try
 	{
-		mif1.printFunctionInPlane(-10, 10, -10, 10);
+		std::cout << mif1(mif1(2)) << std::endl;
+		std::cout << mif1(mif2(2)) << std::endl;
+		std::cout << mif2(mif2(2)) << std::endl;
+		mif1.excludePoint(4);
+		std::cout << mif1(mif2(2)) << std::endl;
+	}
+	catch (const std::exception& e)
+	{
+		std::cout << e.what() << std::endl;
+	}*/
+
+	// < > == !=  
+	//std::cout << (mif1 > mif3);
+
+	// Check parralel
+	//std::cout << (mif1 || mif3) << std::endl;
+	//std::cout << (mif1 || mif2) << std::endl;
+
+	// Check for f^k(x) = f(f(f…f(f(x))...))
+	/*ModifiableIntegersFunction mif4 = mif3^3;
+	mif3.printFirst50();
+	std::cout << std::endl;
+	mif4.printFirst50();*/
+
+	// Check for f^-1
+	/*ModifiableIntegersFunction mif4 = !mif1;
+	mif1.printFirst50();
+	std::cout << std::endl;
+	mif4.printFirst50();*/
+
+	// Check for injection...
+	/*std::cout << mif1.checkForInjection() << std::endl;
+	std::cout << mif1.checkForSurjection() << std::endl;
+	std::cout << mif1.checkForBijection() << std::endl;*/
+	
+	// Check serialization and deserialization
+	/*ModifiableIntegersFunction mif4(mif2);
+	mif1.serialize("file.dat");
+	mif4.deserialize("file.dat");
+	
+	mif1.printFirst50();
+	std::cout << std::endl;
+	mif4.printFirst50();*/
+
+	// Test printing
+	//mif1.printFirst50();
+	/*try
+	{
+		mif2.printFunctionInPlane(-10, 10, -10, 10);
 		mif1.printFunctionInPlane(-10, 10, -11, 10);
 
 	}
