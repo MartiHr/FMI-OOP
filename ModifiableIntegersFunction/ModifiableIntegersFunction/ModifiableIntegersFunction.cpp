@@ -1,6 +1,7 @@
 #pragma once
 #include <iostream>
 #include <exception>
+#include <fstream>
 #include "ModifiableIntegersFunction.h"
 #include "GlobalConstants.h"
 
@@ -154,6 +155,143 @@ ModifiableIntegersFunction ModifiableIntegersFunction::operator()(const Modifiab
 	return result;
 }
 
+bool ModifiableIntegersFunction::checkForInjection()
+{
+	bool* encounteredValues = new bool[constants::INTERVAL_SIZE] { false };
+
+	for (int i = 0; i < constants::INTERVAL_SIZE; i++)
+	{
+		if (valueByPoint[i].isExcluded)
+		{
+			continue;
+		}
+
+		int16_t currentValue = valueByPoint[i].value;
+		int16_t setIndex = currentValue + (-INT16_MIN);
+
+		// Check if value is already contained
+		if (encounteredValues[setIndex] == true)
+		{
+			delete[] encounteredValues;
+			return false;
+		}
+
+		encounteredValues[setIndex] == true;
+	}
+
+	delete[] encounteredValues;
+	return true;
+}
+
+bool ModifiableIntegersFunction::checkForSurjection()
+{
+	// Check if every value has a key
+	bool* foundValues = new bool[constants::INTERVAL_SIZE] { false };
+
+	for (int i = 0; i < constants::INTERVAL_SIZE; i++)
+	{
+		if (valueByPoint[i].isExcluded)
+		{
+			delete[] foundValues;
+			return false;
+		}
+
+		int16_t currentValue = valueByPoint[i].value;
+		int16_t setIndex = currentValue + (-INT16_MIN);
+
+		foundValues[setIndex] = true;
+	}
+
+	for (int i = 0; i < constants::INTERVAL_SIZE; i++)
+	{
+		if (foundValues[i] == false)
+		{
+			delete[] foundValues;
+			return false;
+		}
+	}
+
+	delete[] foundValues;
+	return true;
+}
+
+bool ModifiableIntegersFunction::checkForBijection()
+{
+	return checkForInjection() && checkForSurjection();
+}
+
+void ModifiableIntegersFunction::serialize(const char* fileName) const
+{
+	if (!fileName)
+	{
+		//TODO: handle
+	}
+
+	std::ofstream ofs(fileName, std::ios::binary);
+
+	if (!ofs.is_open())
+	{
+		//TODO: handle
+	}
+
+	ofs.write((const char*)valueByPoint, constants::INTERVAL_SIZE * sizeof(KeyValue));
+}
+
+void ModifiableIntegersFunction::deserialize(const char* fileName)
+{
+	if (!fileName)
+	{
+		//TODO: handle
+	}
+
+	std::ifstream ifs(fileName, std::ios::binary);
+
+	if (!ifs.is_open())
+	{
+		//TODO: handle
+	}
+
+	ifs.read((char*)valueByPoint, constants::INTERVAL_SIZE * sizeof(KeyValue));
+}
+
+void ModifiableIntegersFunction::printFunctionInPlane(int16_t x1, int16_t x2, int16_t y1, int16_t y2) const
+{
+	/*if (x2 - x1 != 20 || y2 - y1 != 20)
+	{
+		throw std::invalid_argument("The diffrences: x2 - x1 should be equal to 20 and y2 - y1 should be equal to 20.");
+	}*/
+
+	for (int y = y2; y >= y1; y--)
+	{
+		for (int x = x1; x < x2; x++)
+		{
+			if (x == 0 && y != 0)
+			{
+				std::cout << '|';
+			}
+			else if (y == 0 && x != 0)
+			{
+				std::cout << '-';
+			}
+			else if (x == 0 && y == 0)
+			{
+				std::cout << '|';
+			}
+			else if (valueByPoint[x + (-INT16_MIN)].isExcluded == false
+				&& valueByPoint[x + (-INT16_MIN)].value == y)
+			{
+				std::cout << '.';
+			}
+			else
+			{
+				std::cout << ' ';
+			}
+		}
+
+		std::cout << std::endl;
+	}
+}
+
 bool operator>(const ModifiableIntegersFunction& lhs, const ModifiableIntegersFunction& rhs)
 {
 	for (int i = 0; i < constants::INTERVAL_SIZE; i++)
@@ -239,6 +377,7 @@ bool operator!=(const ModifiableIntegersFunction& lhs, const ModifiableIntegersF
 
 bool operator||(const ModifiableIntegersFunction& lhs, const ModifiableIntegersFunction& rhs)
 {
+	// check for line
 	int16_t prevDiff = lhs.valueByPoint[0].value - rhs.valueByPoint[0].value;
 
 	for (int i = 1; i < constants::INTERVAL_SIZE; i++)
@@ -282,7 +421,7 @@ ModifiableIntegersFunction operator!(const ModifiableIntegersFunction& func)
 		result.valueByPoint[i].value = func.valueByPoint[i].key;
 	}
 
-	return ModifiableIntegersFunction();
+	return result;
 }
 
 ModifiableIntegersFunction operator+(const ModifiableIntegersFunction& lhs, const ModifiableIntegersFunction& rhs)

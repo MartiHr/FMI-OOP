@@ -9,18 +9,19 @@ struct KeyValue
 
 	bool isExcluded = false;
 	//bool hasCustomValue = false;
-	
+
 };
 
 class ModifiableIntegersFunction
 {
 	int16_t(*function)(int16_t number);
-	
+
 	KeyValue* valueByPoint = nullptr;
 
 	void copyFrom(const ModifiableIntegersFunction& other);
 	void free();
 	bool isDefined();
+	void 
 public:
 	ModifiableIntegersFunction();
 	ModifiableIntegersFunction(int16_t(*pred)(int16_t number));
@@ -39,6 +40,11 @@ public:
 	bool checkForInjection();
 	bool checkForSurjection();
 	bool checkForBijection();
+
+	void serialize(const char* fileName) const;
+	void deserialize(const char* fileName);
+
+	void printFunctionInPlane(int16_t x1, int16_t x2, int16_t y1, int16_t y2) const;
 
 	friend bool operator>(const ModifiableIntegersFunction& lhs, const ModifiableIntegersFunction& rhs);
 	friend bool operator<(const ModifiableIntegersFunction& lhs, const ModifiableIntegersFunction& rhs);
