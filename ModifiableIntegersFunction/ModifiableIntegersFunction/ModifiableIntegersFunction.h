@@ -20,7 +20,7 @@ class ModifiableIntegersFunction
 
 	void copyFrom(const ModifiableIntegersFunction& other);
 	void free();
-
+	bool isDefined();
 public:
 	ModifiableIntegersFunction();
 	ModifiableIntegersFunction(int16_t(*pred)(int16_t number));
@@ -36,11 +36,17 @@ public:
 	ModifiableIntegersFunction& operator-=(const ModifiableIntegersFunction& other);
 	ModifiableIntegersFunction operator()(const ModifiableIntegersFunction& inner);
 
+	bool checkForInjection();
+	bool checkForSurjection();
+	bool checkForBijection();
+
 	friend bool operator>(const ModifiableIntegersFunction& lhs, const ModifiableIntegersFunction& rhs);
 	friend bool operator<(const ModifiableIntegersFunction& lhs, const ModifiableIntegersFunction& rhs);
 	friend bool operator==(const ModifiableIntegersFunction& lhs, const ModifiableIntegersFunction& rhs);
+	friend bool operator!=(const ModifiableIntegersFunction& lhs, const ModifiableIntegersFunction& rhs);
 	friend bool operator||(const ModifiableIntegersFunction& lhs, const ModifiableIntegersFunction& rhs);
-	friend bool operator^(const ModifiableIntegersFunction& func, int16_t k);
+	friend ModifiableIntegersFunction operator^(const ModifiableIntegersFunction& func, int16_t k);
+	friend ModifiableIntegersFunction operator!(const ModifiableIntegersFunction& func);
 };
 
 ModifiableIntegersFunction operator+(const ModifiableIntegersFunction& lhs, const ModifiableIntegersFunction& rhs);

@@ -28,6 +28,19 @@ void ModifiableIntegersFunction::free()
 	delete[] valueByPoint;
 }
 
+bool ModifiableIntegersFunction::isDefined()
+{
+	for (size_t i = 0; i < constants::INTERVAL_SIZE; i++)
+	{
+		if (valueByPoint[i].isExcluded)
+		{
+			return false;
+		}
+	}
+
+	return true;
+}
+
 ModifiableIntegersFunction::ModifiableIntegersFunction()
 {
 	function = nullptr;
@@ -40,7 +53,7 @@ ModifiableIntegersFunction::ModifiableIntegersFunction(int16_t(*pred)(int16_t nu
 
 	for (int i = 0; i < constants::INTERVAL_SIZE; ++i)
 	{
-		valueByPoint[i].key= i + INT16_MIN;
+		valueByPoint[i].key = i + INT16_MIN;
 		valueByPoint[i].value = function(i);
 	}
 }
@@ -91,34 +104,34 @@ int16_t ModifiableIntegersFunction::operator()(int16_t input) const
 
 ModifiableIntegersFunction& ModifiableIntegersFunction::operator+=(const ModifiableIntegersFunction& other)
 {
-    for (int i = 0; i < constants::INTERVAL_SIZE; i++)
-    {
+	for (int i = 0; i < constants::INTERVAL_SIZE; i++)
+	{
 		if (other.valueByPoint[i].isExcluded)
 		{
 			valueByPoint[i].isExcluded = true;
 			continue;
 		}
 
-        valueByPoint[i].value += other.valueByPoint[i].value;
-    }
+		valueByPoint[i].value += other.valueByPoint[i].value;
+	}
 
-    return *this; // Return by reference to the modified object
+	return *this; // Return by reference to the modified object
 }
 
 ModifiableIntegersFunction& ModifiableIntegersFunction::operator-=(const ModifiableIntegersFunction& other)
 {
-    for (int i = 0; i < constants::INTERVAL_SIZE; i++)
-    {
+	for (int i = 0; i < constants::INTERVAL_SIZE; i++)
+	{
 		if (other.valueByPoint[i].isExcluded)
 		{
 			valueByPoint[i].isExcluded = true;
 			continue;
 		}
 
-        valueByPoint[i].value -= other.valueByPoint[i].value; // Perform subtraction
-    }
+		valueByPoint[i].value -= other.valueByPoint[i].value; // Perform subtraction
+	}
 
-    return *this; // Return by reference to the modified object
+	return *this; // Return by reference to the modified object
 }
 
 ModifiableIntegersFunction ModifiableIntegersFunction::operator()(const ModifiableIntegersFunction& inner)
@@ -132,7 +145,7 @@ ModifiableIntegersFunction ModifiableIntegersFunction::operator()(const Modifiab
 			result.valueByPoint[i].isExcluded = true;
 			continue;
 		}
-		
+
 		int16_t innerRes = inner.valueByPoint[i].value;
 		int16_t setIndex = innerRes + (-INT16_MIN);
 		result.valueByPoint[i].value = this->valueByPoint[setIndex].value;
@@ -219,6 +232,11 @@ bool operator==(const ModifiableIntegersFunction& lhs, const ModifiableIntegersF
 	return true;
 }
 
+bool operator!=(const ModifiableIntegersFunction& lhs, const ModifiableIntegersFunction& rhs)
+{
+	return !(lhs == rhs);
+}
+
 bool operator||(const ModifiableIntegersFunction& lhs, const ModifiableIntegersFunction& rhs)
 {
 	int16_t prevDiff = lhs.valueByPoint[0].value - rhs.valueByPoint[0].value;
@@ -236,23 +254,49 @@ bool operator||(const ModifiableIntegersFunction& lhs, const ModifiableIntegersF
 	return true;
 }
 
-bool operator^(const ModifiableIntegersFunction& func, int16_t k)
+ModifiableIntegersFunction operator^(const ModifiableIntegersFunction& func, int16_t k)
 {
+	ModifiableIntegersFunction result(func);
 
+	// TODO: check for how many times
+	for (size_t i = 0; i < k - 1; i++)
+	{
+		result = result(result);
+	}
+
+	return result;
+}
+
+ModifiableIntegersFunction operator!(const ModifiableIntegersFunction& func)
+{
+	ModifiableIntegersFunction result(func);
+
+	if (!result.checkForBijection())
+	{
+		throw std::invalid_argument("The function is not bijective (injective and surjective)");
+	}
+
+	for (int i = 0; i < constants::INTERVAL_SIZE; i++)
+	{
+		result.valueByPoint[i].key = func.valueByPoint[i].value;
+		result.valueByPoint[i].value = func.valueByPoint[i].key;
+	}
+
+	return ModifiableIntegersFunction();
 }
 
 ModifiableIntegersFunction operator+(const ModifiableIntegersFunction& lhs, const ModifiableIntegersFunction& rhs)
 {
-    ModifiableIntegersFunction result(lhs);
-    result += rhs; // Use the compound assignment operator to perform addition
+	ModifiableIntegersFunction result(lhs);
+	result += rhs; // Use the compound assignment operator to perform addition
 
-    return result;
+	return result;
 }
 
 ModifiableIntegersFunction operator-(const ModifiableIntegersFunction& lhs, const ModifiableIntegersFunction& rhs)
 {
-    ModifiableIntegersFunction result(lhs);
-    result -= rhs; // Use the compound assignment operator to perform subtraction
+	ModifiableIntegersFunction result(lhs);
+	result -= rhs; // Use the compound assignment operator to perform subtraction
 
-    return result;
+	return result;
 }
