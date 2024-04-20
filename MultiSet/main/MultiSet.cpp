@@ -85,7 +85,11 @@ unsigned MultiSet::getInnerIndex(unsigned outerIndex) const
 unsigned MultiSet::extractNumber(unsigned number) const
 {
 	// This is the purest way to do this, making the code most readable.
-	// Other ways have unjustified of using them. Take points if the criteria says so :)
+	// Other ways have unjustified of using them. Furthermore if the code is
+	// changed so that we can overflow in more than one bucket
+	// the code would not work which is bad for code extensibility. 
+	// Take points if the criteria says so :)
+
 	unsigned startIndex = getNumberStartIndex(number);
 	unsigned currentInnerIndex = getInnerIndex(startIndex);
 	unsigned currentBucketIndex = getBucketIndex(startIndex);
@@ -118,7 +122,10 @@ unsigned MultiSet::extractNumber(unsigned number) const
 void MultiSet::setNumber(unsigned number, unsigned count)
 {
 	// This is the purest way to do this, making the code most readable.
-	// Other ways have unjustified of using them. Take points if the criteria says so :)
+	// Other ways have unjustified of using them. Furthermore if the code is
+	// changed so that we can overflow in more than one bucket
+	// the code would not work which is bad for code extensibility. 
+	// Take points if the criteria says so :)
 
 	unsigned startIndex = getNumberStartIndex(number);
 	unsigned currentInnerIndex = getInnerIndex(startIndex);
