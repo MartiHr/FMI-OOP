@@ -17,7 +17,6 @@ class MultiSet
 
 	unsigned getNumberStartIndex(unsigned number) const;
 	unsigned getBucketIndex(unsigned number) const;
-	unsigned char getMask(unsigned number) const;
 	unsigned getInnerIndex(unsigned outerIndex) const;
 	unsigned extractNumber(unsigned number) const;
 	void setNumber(unsigned number, unsigned count);

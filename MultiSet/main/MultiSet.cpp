@@ -52,17 +52,6 @@ unsigned MultiSet::getBucketIndex(unsigned index) const
 	return bucketIndex;
 }
 
-unsigned char MultiSet::getMask(unsigned number) const
-{
-	//TODO: Extract constants
-	/*unsigned indexInBucket = number % 8;
-
-	char mask = 1;
-	mask = mask << (7 - indexInBucket);
-	return mask;*/
-	return 0;
-}
-
 unsigned MultiSet::getNumberOccurrences(unsigned number) const
 {
 	if (number > n)
