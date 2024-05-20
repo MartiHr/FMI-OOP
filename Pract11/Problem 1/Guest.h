@@ -4,8 +4,9 @@
 class Guest : public Player
 {
 private:
-	double time;
+	// seconds
+	long remainingTime;
 	
 public:
-
+	Guest(long remainingTime);
 };
