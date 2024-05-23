@@ -50,6 +50,18 @@ void MyString::copyFrom(const MyString& other)
 	strcpy(data, other.data);
 }
 
+void MyString::moveFrom(MyString&& other) noexcept
+{
+	length = other.length;
+	other.length = 0;
+
+	capacity = other.capacity;
+	other.capacity= 0;
+	
+	data = other.data;
+	other.data = nullptr;
+}
+
 MyString::MyString() :MyString("") { }
 
 MyString::MyString(const char* str)
@@ -82,8 +94,27 @@ MyString& MyString::operator=(const MyString& other)
 {
 	if (this != &other)
 	{
+		free();
 		copyFrom(other);
 	}
+
+	return *this;
+}
+
+MyString::MyString(MyString&& other) noexcept
+{
+	copyFrom(std::move(other));
+}
+
+MyString& MyString::operator=(MyString&& other) noexcept
+{
+	if (this != &other)
+	{
+		free();
+		moveFrom(std::move(other));
+	}
+
+	return *this;
 }
 
 MyString::~MyString()

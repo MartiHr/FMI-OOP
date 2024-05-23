@@ -19,12 +19,15 @@ private:
 
 	void free();
 	void copyFrom(const MyString& other);
+	void moveFrom(MyString&& other) noexcept;
 public:
 	MyString();
 	MyString(const char* str);
 
 	MyString(const MyString& other);
 	MyString& operator=(const MyString& other);
+	MyString(MyString&& other) noexcept;
+	MyString& operator=(MyString&& other) noexcept;
 	~MyString();
 
 	size_t getLength() const;
