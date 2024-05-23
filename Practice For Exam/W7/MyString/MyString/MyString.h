@@ -23,4 +23,28 @@ public:
 	MyString();
 	MyString(const char* str);
 
+	MyString(const MyString& other);
+	MyString& operator=(const MyString& other);
+	~MyString();
+
+	size_t getLength() const;
+	size_t getCapacity() const;
+	const char* c_str() const;
+
+	MyString& operator+=(const MyString& other);
+
+	char& operator[](size_t index);
+	char operator[](size_t index) const;
+
+	friend MyString operator+(const MyString& lhs, const MyString& rhs);
+	friend std::istream& operator>>(std::istream& is, MyString& str);
 };
+
+std::ostream& operator<<(std::ostream& os, const MyString& str);
+
+bool operator<(const MyString& lhs, const MyString& rhs);
+bool operator<=(const MyString& lhs, const MyString& rhs);
+bool operator>=(const MyString& lhs, const MyString& rhs);
+bool operator>(const MyString& lhs, const MyString& rhs);
+bool operator==(const MyString& lhs, const MyString& rhs);
+bool operator!=(const MyString& lhs, const MyString& rhs);
