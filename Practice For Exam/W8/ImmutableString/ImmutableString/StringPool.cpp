@@ -29,6 +29,18 @@ int StringPool::allocateString(const char* str)
 	return placeIndex;
 }
 
+void StringPool::deleteRecord(int index)
+{
+	// no empty spaces allowed
+	std::swap(records[index], records[size - 1]);
+
+	delete[] records[size - 1].str;
+	records[size - 1].str = nullptr;
+	records[index].refCount = 0;
+
+	size--;
+}
+
 void StringPool::resize()
 {
 	StringRecord* newRecords = new StringRecord[capacity * 2];
@@ -69,6 +81,41 @@ const char* StringPool::getString(const char* str)
 
 	if (strIndex != -1)
 	{
-		allocateString(const char* str);
+		records[strIndex].refCount++;
+
+		return records[strIndex].str;
 	}
+	else
+	{
+		allocateString(str);
+
+		return records[strIndex].str;
+	}
+}
+
+void StringPool::removeOneString(const char* str)
+{
+	int strIndex = findString(str);
+
+	if (strIndex == -1)
+	{
+		throw std::logic_error("No such string");
+	}
+
+	records[strIndex].refCount--;
+
+	if (records[strIndex].refCount == 0)
+	{
+		deleteRecord(strIndex);
+	}
+}
+
+void StringPool::print() const
+{
+	for (size_t i = 0; i < size; i++)
+	{
+		std::cout << "We have: " << records[i].str << " " << records[i].refCount << " times" << std::endl;
+	}
+
+	std::cout << std::endl;
 }

@@ -15,6 +15,7 @@ private:
 
 	int findString(const char* soghtString) const;
 	int allocateString(const char* str);
+	void deleteRecord(int index);
 
 	void resize();
 public:
@@ -25,7 +26,7 @@ public:
 	~StringPool();
 
 	const char* getString(const char* str);
-	void removeString(const char* str);
+	void removeOneString(const char* str);
 
 	void print() const;
 };
